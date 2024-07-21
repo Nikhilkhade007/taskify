@@ -1,4 +1,4 @@
-import { pgTable, pgEnum, uuid, timestamp, text, foreignKey, jsonb, boolean, bigint, integer } from "drizzle-orm/pg-core"
+import { pgTable, foreignKey, pgEnum, uuid, timestamp, text, jsonb, boolean, bigint, integer } from "drizzle-orm/pg-core"
   import { sql } from "drizzle-orm"
 
 export const keyStatus = pgEnum("key_status", ['default', 'valid', 'invalid', 'expired'])
@@ -14,18 +14,6 @@ export const pricingType = pgEnum("pricing_type", ['one_time', 'recurring'])
 export const pricingPlanInterval = pgEnum("pricing_plan_interval", ['day', 'week', 'month', 'year'])
 export const subscriptionStatus = pgEnum("subscription_status", ['trialing', 'active', 'canceled', 'incomplete', 'incomplete_expired', 'past_due', 'unpaid'])
 
-
-export const workspace = pgTable("workspace", {
-	id: uuid("id").defaultRandom().primaryKey().notNull(),
-	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }),
-	workspaceOwner: uuid("workspace_owner").notNull(),
-	title: text("title").notNull(),
-	iconId: text("icon_id").notNull(),
-	data: text("data"),
-	inTash: text("in_tash"),
-	logo: text("logo"),
-	bannerUrl: text("banner_url"),
-});
 
 export const files = pgTable("files", {
 	id: uuid("id").defaultRandom().primaryKey().notNull(),
@@ -50,13 +38,25 @@ export const folders = pgTable("folders", {
 	workspaceId: uuid("workspace_id").references(() => workspace.id, { onDelete: "cascade" } ),
 });
 
+export const workspace = pgTable("workspace", {
+	id: uuid("id").defaultRandom().primaryKey().notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }),
+	workspaceOwner: uuid("workspace_owner").notNull(),
+	title: text("title").notNull(),
+	iconId: text("icon_id").notNull(),
+	data: text("data"),
+	inTash: text("in_tash"),
+	logo: text("logo"),
+	bannerUrl: text("banner_url"),
+});
+
 export const users = pgTable("users", {
 	id: uuid("id").primaryKey().notNull(),
 	fullName: text("full_name"),
 	avatarUrl: text("avatar_url"),
-	billingAddress: jsonb("billing_address"),
-	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }),
 	email: text("email"),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }),
+	billingAddress: jsonb("billing_address"),
 	paymentMethod: jsonb("payment_method"),
 },
 (table) => {

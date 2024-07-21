@@ -72,14 +72,18 @@ const Signup = () => {
   const isLoading = form.formState.isSubmitting;
   const onSubmit = async ({ email, password }: z.infer<typeof FormSchema>) => {
     console.log("here")
-    const { error } = await actionSignUpUser({ email, password });
+    const formData = {email: email, password: password}
+    const response = await actionSignUpUser(formData);
+    const { error } = JSON.parse(response)
+    console.log(response)
+    console.log(response)
     if (error) {
-      setSubmitError(error.message);
+      setSubmitError("Error while creating user occurred");
       form.reset();
       return;
     }
     setConfirmation(true);
-    console.log("afrer")
+
   };
 
   return (
@@ -104,7 +108,7 @@ const Signup = () => {
         >
           <Image
             src={Logo}
-            alt="cypress Logo"
+            alt="taskify logo"
             width={50}
             height={50}
           />
@@ -112,7 +116,7 @@ const Signup = () => {
             className="font-semibold
           dark:text-white text-4xl first-letter:ml-2"
           >
-            cypress.
+            taskify.
           </span>
         </Link>
         <FormDescription
@@ -136,7 +140,7 @@ const Signup = () => {
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  {/* <FormMessage /> */}
                 </FormItem>
               )}
             />
