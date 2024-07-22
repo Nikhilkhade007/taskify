@@ -78,6 +78,7 @@ const Signup = () => {
     console.log(response)
     console.log(response)
     if (error) {
+      console.log(error)
       setSubmitError("Error while creating user occurred");
       form.reset();
       return;
@@ -140,7 +141,7 @@ const Signup = () => {
                       {...field}
                     />
                   </FormControl>
-                  {/* <FormMessage /> */}
+                  <FormMessage />
                 </FormItem>
               )}
             />

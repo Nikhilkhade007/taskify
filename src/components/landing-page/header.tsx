@@ -17,210 +17,203 @@ import {
 } from '@/components/ui/navigation-menu';
 import { cn } from '@/lib/utils';
 import { Button } from '../ui/button';
+import { HomeIcon, InfoIcon, MenuIcon, ShoppingCart, UsersIcon } from 'lucide-react';
+import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
 
-const routes = [
-  { title: 'Features', href: '#features' },
-  { title: 'Reasources', href: '#resources' },
-  { title: 'Pricing', href: '#pricing' },
-  { title: 'Testimonials', href: '#testimonial' },
-];
+
 
 const Header = () => {
-  const [path, setPath] = useState('#products');
+  const [path, setPath] = useState('#home');
   return (
-    <header
-      className="p-4
-      flex
-      justify-center
-      items-center
-  "
-    >
-      <Link
-        href={'/'}
-        className="w-full flex gap-2
-        justify-left items-center"
-      >
-        <Image
-          src={Logo}
-          alt="Cypress Logo"
-          width={25}
-          height={25}
-        />
-        <span
-          className="font-semibold
-          dark:text-white
-        "
-        >
-          taskify.
-        </span>
-      </Link>
-      <NavigationMenu className="hidden md:block">
-        <NavigationMenuList className="gap-6">
-          <NavigationMenuItem>
-            <NavigationMenuTrigger
-              onClick={() => setPath('#resources')}
-              className={cn({
-                'dark:text-white': path === '#resources',
-                'dark:text-white/40': path !== '#resources',
-                'font-normal': true,
-                'text-xl': true,
-              })}
-            >
-              Resources
-            </NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul
-                className="grid
-                gap-3
-                p-6
-                md:w-[400px]
-                ld:w-[500px]
-                lg:grid-cols-[.75fr_1fr]
-                "
-              >
-                <li className="row-span-3">
-                  <span
-                    className="flex h-full w-full select-none
-                  flex-col
-                  justify-end
-                  rounded-md
-                  bg-gradient-to-b
-                  from-muted/50
-                  to-muted
-                  p-6 no-underline
-                  outline-none
-                  focus:shadow-md
-                  "
-                  >
-                    Welcome
-                  </span>
-                </li>
-                <ListItem
-                  href="#"
-                  title="Introduction"
+  
+      <header className='flex justify-between items-center h-16 px-4 lg:px-6'>
+        <Link href={"/"} className='flex gap-2 items-center justify-center'>
+          <Image src={Logo} alt='Taskify logo' width={25} height={25} />
+          <span className='text-2xl font-semibold'>taskify.</span>
+        </Link>
+          <NavigationMenu className='hidden lg:flex'>
+            <NavigationMenuList className='flex gap-5'>
+              <NavigationMenuItem>
+                <NavigationMenuLink onClick={e=>setPath("#home")} className={cn(navigationMenuTriggerStyle(),{
+                    'text-xl':true,
+                    'font-normal':true,
+                    "dark:bg-transparent":true,
+                    "dark:text-white": path=== "#home",
+                    "dark:text-white/40" : path!=="#home",
+                    "cursor-pointer":true,
+                  
+                })} >
+                  Home
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger 
+                onClick={e=>setPath("#pricing")}
+                  className={cn({
+                    "text-xl":true,
+                    "dark:bg-transparent":true,
+                  "dark:text-white": path=== "#pricing",
+                  "dark:text-white/40" : path!=="#pricing",
+                  "cursor-pointer":true,
+                  "font-normal":true
+                  })}
                 >
-                  Re-usable components built using Radix UI and Tailwind CSS.
-                </ListItem>
-                <ListItem
-                  href="#"
-                  title="Installation"
+                  Pricing
+                </NavigationMenuTrigger>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink 
+                onClick={e=>setPath("#testimonials")}
+                  className={cn(navigationMenuTriggerStyle(),{
+                    "text-xl":true,
+                    "dark:bg-transparent":true,
+                  "dark:text-white": path=== "#testimonials",
+                  "dark:text-white/40" : path!=="#testimonials",
+                  "cursor-pointer":true,
+                  "font-normal":true
+                  })}
                 >
-                  How to install dependencies and structure your app.
-                </ListItem>
-                <ListItem
-                  href="#"
-                  title="Typography"
+                  Testimonials
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger 
+                onClick={e=>setPath("#about")}
+                  className={cn({
+                    "text-xl":true,
+                    "dark:bg-transparent":true,
+                  "dark:text-white": path=== "#about",
+                  "dark:text-white/40" : path!=="#about",
+                  "cursor-pointer":true,
+                  "font-normal":true
+                  })}
                 >
-                  Styles for headings, paragraphs, lists...etc
-                </ListItem>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuTrigger
-              onClick={() => setPath('#pricing')}
-              className={cn({
-                'dark:text-white': path === '#pricing',
-                'dark:text-white/40': path !== '#pricing',
-                'font-normal': true,
-                'text-xl': true,
-              })}
-            >
-              Pricing
-            </NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="grid w-[400px] gap-3 p-4  md:grid-row-2  ">
-                <ListItem
-                  title="Pro Plan"
-                  href={'#'}
-                >
-                  Unlock full power with collaboration.
-                </ListItem>
-                <ListItem
-                  title={'free Plan'}
-                  href={'#'}
-                >
-                  Great for teams just starting out.
-                </ListItem>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
+                  About
+                </NavigationMenuTrigger>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
           
-          <NavigationMenuItem>
-            <NavigationMenuLink
-              className={cn(navigationMenuTriggerStyle(), {
-                'dark:text-white': path === '#testimonials',
-                'dark:text-white/40': path !== '#testimonials',
-                'font-normal': true,
-                'text-xl': true,
-              })}
-            >
-              Testimonial
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>
-      <aside
-        className="flex
-        w-full
-        gap-2
-        justify-end
-      "
-      >
-        <Link href={'/login'}>
-          <Button
-            variant="btn-secondary"
-            className=" p-1 hidden sm:block"
-          >
+        <div className="hidden lg:flex  gap-4">
+          <Button variant="outline" className='text-xl  font-normal'>
+            <Link href={"/signup"}>Sign Up</Link>
+          </Button>
+          <Button className='text-xl font-normal'>
+            <Link href={"/login"}>
             Login
-          </Button>
-        </Link>
-        <Link href="/signup">
-          <Button
-            variant="btn-primary"
-            className="whitespace-nowrap"
-          >
-            Sign Up
-          </Button>
-        </Link>
-      </aside>
-    </header>
+            </Link>
+            </Button>
+        </div>
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant={"outline"} size={"icon"} className='lg:hidden'>
+              <MenuIcon />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side={"left"}>
+            <div className='grid gap-2'>
+                <Link className='flex gap-3 mb-5 items-center' href={"/"}>
+                  <Image src={Logo} alt='taskify logo'/>
+                  <span className='text-2xl font-semibold'>taskify.</span>
+                </Link>
+                <nav className='grid ml-6 gap-4'>
+                  <Link href={"#"} onClick={e=>setPath("#home")} className={cn({
+                    "flex":true,
+                    "text-lg":true,
+                    " gap-2":true,
+                    "dark:text-white": path=== "#home",
+                    "dark:text-white/40" : path!=="#home",
+                    "cursor-pointer":true,
+                    "font-normal":true
+                  })}>
+                    <HomeIcon/>
+                    <span>Home</span>
+                  </Link>
+                  <Link href={"#"} onClick={e=>setPath("#pricing")} className={cn({
+                    "flex":true,
+                    "text-lg":true,
+                    " gap-2":true,
+                    "dark:text-white": path=== "#pricing",
+                    "dark:text-white/40" : path!=="#pricing",
+                    "cursor-pointer":true,
+                    "font-normal":true
+                  })}>
+                    <ShoppingCart/>
+                    <span>Pricing</span>
+                  </Link>
+                  <Link href={"#"} onClick={e=>setPath("#testimonials")} className={cn({
+                    "flex":true,
+                    "text-lg":true,
+                    " gap-2":true,
+                    "dark:text-white": path=== "#testimonials",
+                    "dark:text-white/40" : path!=="#testimonials",
+                    "cursor-pointer":true,
+                    "font-normal":true
+                  })}>
+                    <UsersIcon/>
+                    <span>Testimonials</span>
+                  </Link>
+                  <Link href={"#"} onClick={e=>setPath("#about")} className={cn({
+                    "flex":true,
+                    "text-lg":true,
+                    " gap-2":true,
+                    "dark:text-white": path=== "#about",
+                    "dark:text-white/40" : path!=="#about",
+                    "cursor-pointer":true,
+                    "font-normal":true
+                  })}>
+                    <InfoIcon/>
+                    <span>About</span>
+                  </Link>
+                </nav>
+                <div className='flex flex-col gap-2 mt-2'>
+                  <Button className='text-xl font-normal' variant={"outline"}>
+                    <Link href={"/signup"}>SignUp</Link>
+                  </Button>
+                  <Button className='font-normal text-xl'>
+                    <Link  href={"/login"}>Login</Link>
+                  </Button>
+                </div>
+            </div>
+          </SheetContent>
+        </Sheet>
+      </header>
   );
 };
 
 export default Header;
 
-const ListItem = React.forwardRef<
-  React.ElementRef<'a'>,
-  React.ComponentPropsWithoutRef<'a'>
->(({ className, title, children, ...props }, ref) => {
-  return (
-    <li>
-      <NavigationMenuLink asChild>
-        <a
-          ref={ref}
-          className={cn(
-            'group block select-none space-y-1 font-medium leading-none'
-          )}
-          {...props}
-        >
-          <div className="text-white text-sm font-medium leading-none">
-            {title}
-          </div>
-          <p
-            className="group-hover:text-white/70
-            line-clamp-2
-            text-sm
-            leading-snug
-            text-white/40
-          "
-          >
-            {children}
-          </p>
-        </a>
-      </NavigationMenuLink>
-    </li>
-  );
-});
+// const ListItem = React.forwardRef<
+//   React.ElementRef<'a'>,
+//   React.ComponentPropsWithoutRef<'a'>
+// >(({ className, title, children, ...props }, ref) => {
+//   return (
+//     <li>
+//       <NavigationMenuLink asChild>
+//         <a
+//           ref={ref}
+//           className={cn(
+//             'group block select-none space-y-1 font-medium leading-none'
+//           )}
+//           {...props}
+//         >
+//           <div className="text-white text-sm font-medium leading-none">
+//             {title}
+//           </div>
+//           <p
+//             className="group-hover:text-white/70
+//             line-clamp-2
+//             text-sm
+//             leading-snug
+//             text-white/40
+//           "
+//           >
+//             {children}
+//           </p>
+//         </a>
+//       </NavigationMenuLink>
+//     </li>
+//   );
+// });
 
-ListItem.displayName = 'ListItem';
+// ListItem.displayName = 'ListItem';

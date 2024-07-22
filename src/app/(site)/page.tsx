@@ -2,6 +2,7 @@ import TitleSection from '@/components/landing-page/title-section'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import React from 'react'
+import Logo from "../../../public/taskifyLogo.svg"
 import Bannner from "../../../public/appBanner.png"
 import { CLIENTS, PRICING_CARDS, PRICING_PLANS, USERS } from '@/lib/constants'
 import Cal from "../../../public/Calender.png"
@@ -13,44 +14,33 @@ import { twMerge } from 'tailwind-merge'
 import clsx from 'clsx'
 import CustomCard from '@/components/landing-page/custom-card'
 import Diamond from "../../../public/diamond.svg"
+import { CalendarIcon, CombineIcon, DatabaseIcon, ImportIcon, StickyNoteIcon, TimerIcon } from 'lucide-react'
+import FeaturesCard from '@/components/landing-page/featureCard'
+import Link from 'next/link'
 function HomePage() {
   return (
   <>
-    <section className='overflow-hidden px-4 sm:px-6 mt-10 sm:flex sm:flex-col md:justify-center md:items-center'>
-      <TitleSection pill={"✨ Your workspace, Perfected"} title={"All-In-One Collaboration and Productive Platform"} />
-      <div className='p-[2px] mt-6 bg-white bg-gradient-to-r from-brand-primaryPurple to-brand-primaryBlue sm:w-[300px] rounded-xl'>
-        <Button variant={"btn-secondary"} className='w-full bg-background text-2xl p-6 rounded-[10px]'>Get taskify Free</Button>
-
-      </div>
-      <div
-          className="md:mt-[-90px]
-          sm:w-full
-          w-[750px]
-          flex
-          justify-center
-          items-center
-          mt-[-40px]
-          relative
-          sm:ml-0
-          ml-[-50px]
-        "
-        >
-          <Image
-            src={Bannner}
-            alt="Application Banner"
-          />
-          <div
-            className="bottom-0
-            top-[50%]
-            bg-gradient-to-t
-            dark:from-background
-            left-0
-            right-0
-            absolute
-            z-10
-          "
-          ></div>
+    <section className='py-12 md:py-24 lg:py-32'>
+      <div className='container px-4 md:px-6 grid gap-8 lg:grid-cols-2 lg:gap-16'>
+        <div className='space-y-4'>
+          <h1 className='text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight'>Unlock your productivity with taskify.</h1>
+          <p className='text-washed-purple-700'>taskify is an all-in-one workspace for your notes, tasks, and projects. Streamline your workflow and collaborate with your team.</p>
+          <div className='flex flex-col sm:flex-row gap-4 '>
+            <Button className='font-normal sm:text-xl' >
+              <Link href={"/signup"}>
+              <div>Sign Up</div>
+              </Link>
+            </Button>
+            <Button className='text-xl' variant={"outline"}>
+              Learn more
+            </Button>
           </div>
+        </div>
+        <div className='w-full'>
+        <Image className="mx-auto aspect-video rounded-xl object-cover" src={Bannner} alt='banner Image' width={700} height={500}/>
+        
+        </div>
+      </div>
     </section>
     <section className="relative">
         <div
@@ -134,29 +124,29 @@ function HomePage() {
         "
         />
         <TitleSection
-          title="Keep track of your meetings all in one place"
-          subheading="Capture your ideas, thoughts, and meeting notes in a structured and organized manner."
+          title="Features that make you more productive"
+          subheading="Taskify provides a range of features to help you stay organized and focused."
           pill="Features"
         />
-        <div
-          className="mt-10
-          max-w-[450px]
-          flex
-          justify-center
-          items-center
-          relative
-          sm:ml-0
-          rounded-2xl
-          border-8
-          border-washed-purple-300 
-          border-opacity-10
-        "
-        >
-          <Image
-            src={Cal}
-            alt="Banner"
-            className="rounded-2xl"
-          />
+        <div className='grid gap-8 sm:self-center self-start my-12 sm:grid-cols-2 lg:grid-cols-3'>
+          <FeaturesCard title='Notes' description='Create rich, formatted notes with ease.'>
+            <StickyNoteIcon className='h-8 w-8 '/>
+          </FeaturesCard>
+          <FeaturesCard title='Tasks' description='Manage your tasks and projects with kanban boards.'>
+            <TimerIcon className='h-8 w-8 '/>
+          </FeaturesCard>
+          <FeaturesCard title='Collaboration' description='Invite your team and collaborate in real-time.'>
+            <CombineIcon className='h-8 w-8 '/>
+          </FeaturesCard>
+          <FeaturesCard title='Database' description='Organize your information in custom databases.'>
+            <DatabaseIcon className='h-8 w-8 '/>
+          </FeaturesCard>
+          <FeaturesCard title='Calendar' description='View your tasks and events in a calendar view.'>
+            <CalendarIcon className='h-8 w-8 '/>
+          </FeaturesCard>
+          <FeaturesCard title='Integration' description='Connect Notion with your favorite apps and tools.'>
+            <ImportIcon className='h-8 w-8 '/>
+          </FeaturesCard>
         </div>
       </section>
       <section className="relative">
@@ -191,7 +181,7 @@ function HomePage() {
             <div
               key={randomUUID()}
               className={twMerge(
-                clsx('mt-10 flex flex-nowrap gap-6 self-start', {
+                clsx('mt-10 flex flex-nowrap sm:gap-6 gap-4 self-start', {
                   'flex-row-reverse': index === 1,
                   'animate-[slide_250s_linear_infinite]': true,
                   'animate-[slide_250s_linear_infinite_reverse]': index === 1,
@@ -204,8 +194,7 @@ function HomePage() {
                 <CustomCard
                   key={testimonial.name}
                   className="w-[500px]
-                  shrink-0s
-                  rounded-xl
+                  rounded-2xl
                   dark:bg-gradient-to-t
                   dark:from-border dark:to-background
                 "
@@ -359,6 +348,25 @@ function HomePage() {
           ))}
         </div>
       </section>
+      {/* <section className='py-12 px-10 mt-12'>
+        <div>
+          <div className='space-y-2'>
+            <div className='flex gap-2 items-center'>
+              <Image height={20} width={20} src={Logo} alt='taskify logo' />
+              <span className='text-[16px]'>taskify.</span>
+            </div>
+            <p className='text-sm text-washed-purple-700'>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          </div>
+          <div >
+            <div className='text-washed-purple-800'>HI</div>
+            <div className='text-washed-purple-800'>HI</div>
+            <div className='text-washed-purple-800'>HI</div>
+            <div className='text-washed-purple-800'>HI</div>
+            <div className='text-washed-purple-800'>HI</div>
+            <div className='text-washed-purple-800'>HI</div>
+          </div>
+        </div>
+      </section> */}
   </>
     
     

@@ -42,6 +42,7 @@ const LoginPage = () => {
     console.log(response)
     if (error) {
       form.reset();
+      console.log(error)
       setSubmitError("User not found");
     }else{
       router.replace('/dashboard');
@@ -50,7 +51,7 @@ const LoginPage = () => {
   };
 
   return (
-    <Form {...form}>
+      <Form {...form}>
       <form
         onChange={() => {
           if (submitError) setSubmitError('');
@@ -76,7 +77,7 @@ const LoginPage = () => {
             className="font-semibold
           dark:text-white text-4xl first-letter:ml-2"
           >
-            cypress.
+            taskify.
           </span>
         </Link>
         <FormDescription

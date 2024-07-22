@@ -25,6 +25,7 @@ const CustomCard: React.FC<CustomCardProps> = ({
       <CardContent
         className="grid
         gap-4
+        px-6 py-2
       "
       >
         {cardContent}
