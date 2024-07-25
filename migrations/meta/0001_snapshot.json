@@ -1,6 +1,6 @@
 {
-  "id": "f2268992-86e1-4c56-a5a9-763b630710ad",
-  "prevId": "9894a3e4-5c29-4bbc-ab8c-77f0b887448c",
+  "id": "6969c78b-813f-492d-a47e-5fac8105e014",
+  "prevId": "258fce85-8020-4a9d-989c-df71973bd214",
   "version": "5",
   "dialect": "pg",
   "tables": {
@@ -102,10 +102,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "files_workspace_id_workspace_id_fk": {
-          "name": "files_workspace_id_workspace_id_fk",
+        "files_workspace_id_workspaces_id_fk": {
+          "name": "files_workspace_id_workspaces_id_fk",
           "tableFrom": "files",
-          "tableTo": "workspace",
+          "tableTo": "workspaces",
           "columnsFrom": [
             "workspace_id"
           ],
@@ -188,10 +188,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "folders_workspace_id_workspace_id_fk": {
-          "name": "folders_workspace_id_workspace_id_fk",
+        "folders_workspace_id_workspaces_id_fk": {
+          "name": "folders_workspace_id_workspaces_id_fk",
           "tableFrom": "folders",
-          "tableTo": "workspace",
+          "tableTo": "workspaces",
           "columnsFrom": [
             "workspace_id"
           ],
@@ -542,8 +542,8 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "workspace": {
-      "name": "workspace",
+    "workspaces": {
+      "name": "workspaces",
       "schema": "",
       "columns": {
         "id": {

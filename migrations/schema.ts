@@ -1,6 +1,5 @@
 import { pgTable, foreignKey, pgEnum, uuid, timestamp, text, jsonb, boolean, bigint, integer } from "drizzle-orm/pg-core"
   import { sql } from "drizzle-orm"
-
 export const keyStatus = pgEnum("key_status", ['default', 'valid', 'invalid', 'expired'])
 export const keyType = pgEnum("key_type", ['aead-ietf', 'aead-det', 'hmacsha512', 'hmacsha256', 'auth', 'shorthash', 'generichash', 'kdf', 'secretbox', 'secretstream', 'stream_xchacha20'])
 export const factorType = pgEnum("factor_type", ['totp', 'webauthn'])
@@ -23,7 +22,7 @@ export const files = pgTable("files", {
 	data: text("data"),
 	inTash: text("in_tash"),
 	bannerUrl: text("banner_url"),
-	workspaceId: uuid("workspace_id").references(() => workspace.id, { onDelete: "cascade" } ),
+	workspaceId: uuid("workspace_id").references(() => workspaces.id, { onDelete: "cascade" } ),
 	folderId: uuid("folder_id").references(() => folders.id, { onDelete: "cascade" } ),
 });
 
@@ -35,10 +34,10 @@ export const folders = pgTable("folders", {
 	data: text("data"),
 	inTash: text("in_tash"),
 	bannerUrl: text("banner_url"),
-	workspaceId: uuid("workspace_id").references(() => workspace.id, { onDelete: "cascade" } ),
+	workspaceId: uuid("workspace_id").references(() => workspaces.id, { onDelete: "cascade" } ),
 });
 
-export const workspace = pgTable("workspace", {
+export const workspaces = pgTable("workspace", {
 	id: uuid("id").defaultRandom().primaryKey().notNull(),
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }),
 	workspaceOwner: uuid("workspace_owner").notNull(),

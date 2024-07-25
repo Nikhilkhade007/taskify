@@ -3,7 +3,7 @@ import { pricingPlanInterval, pricingType, subscriptionStatus } from "../../../m
 import { sql } from "drizzle-orm";
 
 
-export const workspace = pgTable('workspace',{
+export const workspaces = pgTable('workspaces',{
     id : uuid("id").defaultRandom().primaryKey().notNull(),
     createdAt: timestamp('created_at',{
         withTimezone: true,
@@ -31,7 +31,7 @@ export const folders = pgTable('folders',{
     data: text('data'),
     inTash: text('in_tash'),
     bannerUrl: text('banner_url'),
-    workspaceId: uuid("workspace_id").references(()=> workspace.id,{onDelete: "cascade"})
+    workspaceId: uuid("workspace_id").references(()=> workspaces.id,{onDelete: "cascade"})
     
 
 })
@@ -47,7 +47,7 @@ export const files = pgTable('files',{
     data: text('data'),
     inTash: text('in_tash'),
     bannerUrl: text('banner_url'),
-    workspaceId: uuid("workspace_id").references(()=> workspace.id,{onDelete: "cascade"}),
+    workspaceId: uuid("workspace_id").references(()=> workspaces.id,{onDelete: "cascade"}),
     folderId: uuid("folder_id").references(()=> folders.id,{onDelete: "cascade"})
 
 })

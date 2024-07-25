@@ -1,5 +1,5 @@
 {
-  "id": "9894a3e4-5c29-4bbc-ab8c-77f0b887448c",
+  "id": "258fce85-8020-4a9d-989c-df71973bd214",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -66,10 +66,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "files_workspace_id_workspace_id_fk": {
-          "name": "files_workspace_id_workspace_id_fk",
+        "files_workspace_id_workspaces_id_fk": {
+          "name": "files_workspace_id_workspaces_id_fk",
           "tableFrom": "files",
-          "tableTo": "workspace",
+          "tableTo": "workspaces",
           "columnsFrom": [
             "workspace_id"
           ],
@@ -152,10 +152,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "folders_workspace_id_workspace_id_fk": {
-          "name": "folders_workspace_id_workspace_id_fk",
+        "folders_workspace_id_workspaces_id_fk": {
+          "name": "folders_workspace_id_workspaces_id_fk",
           "tableFrom": "folders",
-          "tableTo": "workspace",
+          "tableTo": "workspaces",
           "columnsFrom": [
             "workspace_id"
           ],
@@ -169,8 +169,8 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "workspace": {
-      "name": "workspace",
+    "workspaces": {
+      "name": "workspaces",
       "schema": "",
       "columns": {
         "id": {
