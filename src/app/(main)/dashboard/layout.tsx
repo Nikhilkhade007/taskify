@@ -1,3 +1,5 @@
+import { ToastProvider } from '@/components/ui/toast'
+import { Toaster } from '@/components/ui/toaster'
 import React from 'react'
 interface layoutProps{
     children:React.ReactNode,
@@ -5,9 +7,13 @@ interface layoutProps{
 }
 function Layout({children,params}:layoutProps) {
   return (
-    <div>
+    <main className='flex overflow-hidden h-screen'>
+      <ToastProvider>
         {children}
-    </div>
+        <Toaster/>
+      </ToastProvider>
+        
+    </main>
   )
 }
 

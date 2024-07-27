@@ -15,6 +15,13 @@
       "when": 1721908270157,
       "tag": "0001_numerous_vampiro",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1722021459765,
+      "tag": "0002_round_elektra",
+      "breakpoints": true
     }
   ]
 }

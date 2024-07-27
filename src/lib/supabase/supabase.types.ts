@@ -85,7 +85,7 @@ export interface Database {
           folder_id: string;
           icon_id: string;
           id: string;
-          in_trash: string | null;
+          in_tash: string | null;
           title: string;
           workspace_id: string;
         };
@@ -96,7 +96,7 @@ export interface Database {
           folder_id: string;
           icon_id: string;
           id?: string;
-          in_trash?: string | null;
+          in_tash?: string | null;
           title: string;
           workspace_id: string;
         };
@@ -107,7 +107,7 @@ export interface Database {
           folder_id?: string;
           icon_id?: string;
           id?: string;
-          in_trash?: string | null;
+          in_tash?: string | null;
           title?: string;
           workspace_id?: string;
         };
@@ -133,7 +133,7 @@ export interface Database {
           data: string | null;
           icon_id: string;
           id: string;
-          in_trash: string | null;
+          in_tash: string | null;
           title: string;
           workspace_id: string;
         };
@@ -143,7 +143,7 @@ export interface Database {
           data?: string | null;
           icon_id: string;
           id?: string;
-          in_trash?: string | null;
+          in_tash?: string | null;
           title: string;
           workspace_id: string;
         };
@@ -153,7 +153,7 @@ export interface Database {
           data?: string | null;
           icon_id?: string;
           id?: string;
-          in_trash?: string | null;
+          in_tash?: string | null;
           title?: string;
           workspace_id?: string;
         };
@@ -363,7 +363,7 @@ export interface Database {
           data: string | null;
           icon_id: string;
           id: string;
-          in_trash: string | null;
+          in_tash: string | null;
           logo: string | null;
           title: string;
           workspace_owner: string;
@@ -374,7 +374,7 @@ export interface Database {
           data?: string | null;
           icon_id: string;
           id?: string;
-          in_trash?: string | null;
+          in_tash?: string | null;
           logo?: string | null;
           title: string;
           workspace_owner: string;
@@ -385,7 +385,7 @@ export interface Database {
           data?: string | null;
           icon_id?: string;
           id?: string;
-          in_trash?: string | null;
+          in_tash?: string | null;
           logo?: string | null;
           title?: string;
           workspace_owner?: string;

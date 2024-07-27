@@ -1,6 +1,6 @@
 import { pgTable, pgEnum, uuid, timestamp, text, foreignKey, jsonb, boolean, bigint, integer } from "drizzle-orm/pg-core"
 import { pricingPlanInterval, pricingType, subscriptionStatus } from "../../../migrations/schema";
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 
 
 export const workspaces = pgTable('workspaces',{
@@ -117,3 +117,31 @@ export const subscriptions = pgTable("subscriptions", {
 	trialStart: timestamp("trial_start", { withTimezone: true, mode: 'string' }).default(sql`now()`),
 	trialEnd: timestamp("trial_end", { withTimezone: true, mode: 'string' }).default(sql`now()`),
 });
+
+export const collaborators = pgTable('collaborators', {
+	id: uuid('id').defaultRandom().primaryKey().notNull(),
+	workspaceId: uuid('workspace_id')
+	  .notNull()
+	  .references(() => workspaces.id, { onDelete: 'cascade' }),
+	createdAt: timestamp('created_at', {
+	  withTimezone: true,
+	  mode: 'string',
+	})
+	  .defaultNow()
+	  .notNull(),
+	userId: uuid('user_id')
+	  .notNull()
+	  .references(() => users.id, { onDelete: 'cascade' }),
+  });
+  
+  //Dont Delete!!!
+  export const productsRelations = relations(products, ({ many }) => ({
+	prices: many(prices),
+  }));
+  
+  export const pricesRelations = relations(prices, ({ one }) => ({
+	product: one(products, {
+	  fields: [prices.productId],
+	  references: [products.id],
+	}),
+  }));
