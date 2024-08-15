@@ -4,7 +4,13 @@ const nextConfig = {
       serverActions: true,
     },
     images: {
-      domains: ['fmliqecnrxgzwvucipeu.supabase.co'],
+      remotePatterns:[{
+        protocol: 'https',
+        hostname: 'bqjzxefpplfpxmoswnxy.supabase.co',
+        port: '',
+        pathname: '/account123/**',
+      }],
+      domains: ['bqjzxefpplfpxmoswnxy.supabase.co'],
     },
   };
 export default nextConfig;
