@@ -21,6 +21,7 @@ import SearchCollaborator from './searchCollaborator';
 import { ScrollArea } from '../ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { useToast } from '../ui/use-toast';
+import { useAppState } from '@/lib/providers/state-provider';
 
 const CreateWorkspace = () => {
   const { user } = useSupabaseUser();
@@ -30,7 +31,7 @@ const CreateWorkspace = () => {
   const [title, setTitle] = useState('');
   const [collaborators, setCollaborators] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-
+  const {dispatch} = useAppState()
   const addCollaborator = (user: User) => {
     setCollaborators([...collaborators, user]);
   };
@@ -43,7 +44,7 @@ const CreateWorkspace = () => {
     setIsLoading(true);
     const uuid = v4();
     if (user?.id) {
-      const newWorkspace: workspace = {
+      const newWorkspace = {
         data: null,
         createdAt: new Date().toISOString(),
         iconId: '💼',
@@ -53,17 +54,28 @@ const CreateWorkspace = () => {
         workspaceOwner: user.id,
         logo: null,
         bannerUrl: '',
+        folders:[]
       };
       if (permissions === 'private') {
         toast({ title: 'Success', description: 'Created the workspace' });
+      dispatch({
+        type:"ADD_WORKSPACE",
+        payload: newWorkspace
+      })
         await createWorkspace(newWorkspace);
-        router.refresh();
+        router.refresh()
+        router.push(`/dashboard/${newWorkspace.id}`);
       }
       if (permissions === 'shared') {
         toast({ title: 'Success', description: 'Created the workspace' });
+        dispatch({
+          type:"ADD_WORKSPACE",
+          payload: newWorkspace
+        })
         await createWorkspace(newWorkspace);
         await addCollaborators(collaborators, uuid);
-        router.refresh();
+        router.refresh()
+        router.push(`/dashboard/${newWorkspace.id}`);
       }
     }
     setIsLoading(false);

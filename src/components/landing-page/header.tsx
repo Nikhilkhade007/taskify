@@ -19,6 +19,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '../ui/button';
 import { HomeIcon, InfoIcon, MenuIcon, ShoppingCart, UsersIcon } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
+import { ThemeToggler } from '../global/ThemeToggler';
 
 
 
@@ -93,16 +94,18 @@ const Header = () => {
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
-          
-        <div className="hidden lg:flex  gap-4">
-          <Button variant="outline" className='text-xl  font-normal'>
-            <Link href={"/signup"}>Sign Up</Link>
-          </Button>
-          <Button className='text-xl font-normal'>
-            <Link href={"/login"}>
-            Login
-            </Link>
+        <div className='flex gap-2'>
+          <ThemeToggler/>
+          <div className="hidden lg:flex  gap-4">
+            <Button variant="outline" className='text-xl  font-normal'>
+              <Link href={"/signup"}>Sign Up</Link>
             </Button>
+            <Button className='text-xl font-normal'>
+              <Link href={"/login"}>
+              Login
+              </Link>
+              </Button>
+          </div>
         </div>
         <Sheet>
           <SheetTrigger asChild>
@@ -166,14 +169,16 @@ const Header = () => {
                     <span>About</span>
                   </Link>
                 </nav>
-                <div className='flex flex-col gap-2 mt-2'>
-                  <Button className='text-xl font-normal' variant={"outline"}>
-                    <Link href={"/signup"}>SignUp</Link>
-                  </Button>
-                  <Button className='font-normal text-xl'>
-                    <Link  href={"/login"}>Login</Link>
-                  </Button>
-                </div>
+    
+                  <div className='flex flex-col gap-2 mt-2'>
+                    <Button className='text-xl font-normal' variant={"outline"}>
+                      <Link href={"/signup"}>SignUp</Link>
+                    </Button>
+                    <Button className='font-normal text-xl'>
+                      <Link  href={"/login"}>Login</Link>
+                    </Button>
+                  </div>
+  
             </div>
           </SheetContent>
         </Sheet>

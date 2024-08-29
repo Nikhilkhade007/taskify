@@ -24,7 +24,7 @@ function SelectedWorkspace({workspace,onClick}:SelectedWorkspaceProps) {
       if (onClick) onClick(workspace);
     }}
     className='rounded-md flex hover:bg-muted transition-all w-full flex-row p-2 justify-center cursor-pointer my-2 items-center gap-4'>
-      <Image src={workspaceLogo} alt='workspace logo' width={26} height={26} objectFit='cover'/>
+      <Image src={workspaceLogo} alt='workspace logo' width={26} height={26} className=' object-cover'/>
       <div className='flex flex-col'>
         <p className='w-[170px] overflow-hidden overflow-ellipsis text-lg whitespace-nowrap'>
           {workspace.title}

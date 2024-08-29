@@ -187,7 +187,7 @@ const appReducer = (
         ...state,
         workspaces: state.workspaces.map((workspace) => {
           const updatedFolders = workspace.folders.filter(
-            (folder) => folder.folderId !== action.payload.folderId
+            (folder) => folder.id !== action.payload.folderId
           );
 
           if (updatedFolders.length !== workspace.folders.length) {
@@ -207,7 +207,7 @@ const appReducer = (
         workspaces: state.workspaces.map((workspace) => ({
           ...workspace,
           folders: workspace.folders.map((folder) => {
-            if (folder.folderId === action.payload.id) {
+            if (folder.id === action.payload.id) {
               return {
                 ...folder,
                 inTrash: action.payload.message,
@@ -228,7 +228,7 @@ const appReducer = (
         workspaces: state.workspaces.map((workspace) => ({
           ...workspace,
           folders: workspace.folders.map((folder) => {
-            if (folder.folderId === action.payload) {
+            if (folder.id === action.payload) {
               return {
                 ...folder,
                 inTrash: '',
@@ -247,7 +247,7 @@ const appReducer = (
             return {
               ...workspace,
               folders: workspace.folders.map((folder) => {
-                if (folder.folderId === action.payload.folderId) {
+                if (folder.id === action.payload.folderId) {
                   return {
                     ...folder,
                     files: action.payload.files,
@@ -269,7 +269,7 @@ const appReducer = (
             return {
               ...workspace,
               folders: workspace.folders.map((folder) => {
-                if (folder.folderId === action.payload.folderId) {
+                if (folder.id === action.payload.folderId) {
                   return {
                     ...folder,
                     files: [...folder.files, action.payload.file].sort(
@@ -294,7 +294,7 @@ const appReducer = (
             return {
               ...workspace,
               folders: workspace.folders.map((folder) => {
-                if (folder.folderId === action.payload.folderId) {
+                if (folder.id === action.payload.folderId) {
                   return {
                     ...folder,
                     files: folder.files.filter(
@@ -335,7 +335,7 @@ const appReducer = (
         workspaces: state.workspaces.map((workspace) => ({
           ...workspace,
           folders: workspace.folders.map((folder) => {
-            if (folder.folderId === action.payload.folderId) {
+            if (folder.id === action.payload.folderId) {
               return {
                 ...folder,
                 files: folder.files.map((file) => {
@@ -367,7 +367,7 @@ const appReducer = (
               ...workspace,
               folders: workspace.folders.map((folder) => {
                 if (
-                  folder.folderId === action.payload.id &&
+                  folder.id === action.payload.id &&
                   action.payload.type === 'folder'
                 ) {
                   return {
@@ -413,7 +413,7 @@ const appReducer = (
               ...workspace,
               folders: workspace.folders.map((folder) => {
                 if (
-                  folder.folderId === action.payload.id &&
+                  folder.id === action.payload.id &&
                   action.payload.type === 'folder'
                 ) {
                   return {
@@ -456,7 +456,7 @@ const appReducer = (
             return {
               ...workspace,
               folders: workspace.folders.map((folder) => {
-                if (folder.folderId === id && type === 'folder') {
+                if (folder.id === id && type === 'folder') {
                   return {
                     ...folder,
                     data,
@@ -502,7 +502,7 @@ const appReducer = (
             return {
               ...workspace,
               folders: workspace.folders.map((folder) => {
-                if (folder.folderId === action.payload.folderId) {
+                if (folder.id === action.payload.folderId) {
                   return {
                     ...folder,
                     ...action.payload.folder,
@@ -523,7 +523,7 @@ const appReducer = (
             return {
               ...workspace,
               folders: workspace.folders.map((folder) => {
-                if (folder.folderId === action.payload.folderId) {
+                if (folder.id === action.payload.folderId) {
                   return {
                     ...folder,
                     files: folder.files.map((file) => {
@@ -614,7 +614,7 @@ export const AppStateProvider: FC<AppStateProviderProps> = ({ children }) => {
 
     const findWorkspace = state.workspaces
       .find((w) => w.id === workspaceId)
-      ?.folders.find((folder) => folder.folderId === folderId);
+      ?.folders.find((folder) => folder.id === folderId);
     if (!findWorkspace?.files.length) fetchFiles();
   }, [folderId, workspaceId, pathname]);
 
