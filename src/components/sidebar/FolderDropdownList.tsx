@@ -84,7 +84,7 @@ function FolderDropdownList({workspaceFolders,workspaceId}:FolderDropdownListPro
     </div>
     <Accordion type='multiple' defaultValue={[folderId || ""]} className='pb-20'>
         {folders.filter(folder=> !folder.inTash).map(folder=>(
-          <Dropdown title={folder.title} id={folder.id} iconId={folder.iconId} listType='folder'/>
+          <Dropdown key={folder.id} title={folder.title} id={folder.id} iconId={folder.iconId} listType='folder'/>
         ))}
       </Accordion>
 
