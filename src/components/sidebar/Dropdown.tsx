@@ -264,7 +264,7 @@ const Dropdown = ({title,id,iconId,children,disabled,listType}:DropdownProps) =>
             onBlur={handleBlur} onChange={listType === "folder" ? folderTitleChange :fileTitleChange}/>
           </div>
           <div className={hoverStyles}>
-            <TooltipComponent message="Delete Folder">
+            <TooltipComponent message={listType === "folder"?"Remove folder":"Remove file"}>
               <TrashIcon
                 onClick={moveToTrash}
                 size={15}

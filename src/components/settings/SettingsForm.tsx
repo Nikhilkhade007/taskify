@@ -129,6 +129,7 @@ const SettingsForm = () => {
     if (!file) return;
     const uuid = v4();
     setUploadingLogo(true);
+    await supabase.storage.from("workspace-logos").remove([workspaceDetails?.logo!])
     const { data, error } = await supabase.storage
       .from('workspace-logos')
       .upload(`workspaceLogo.${uuid}`, file, {
@@ -143,6 +144,7 @@ const SettingsForm = () => {
       });
       await updateWorkspace({ logo: data.path }, workspaceId);
       setUploadingLogo(false);
+      router.refresh()
     }
   };
 
@@ -224,7 +226,7 @@ const SettingsForm = () => {
           accept="image/*"
           placeholder="Workspace Logo"
           onChange={onChangeWorkspaceLogo}
-          disabled={uploadingLogo || subscription?.status !== 'active'}
+          disabled={uploadingLogo }
         />
         {subscription?.status !== 'active' && (
           <small className="text-muted-foreground">
