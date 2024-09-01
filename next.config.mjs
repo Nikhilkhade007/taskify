@@ -10,7 +10,7 @@ const nextConfig = {
         port: '',
         pathname: '/storage/v1/object/public/workspace-logos/**',
       }],
-      // domains: ['bqjzxefpplfpxmoswnxy.supabase.co'],
+      domains: ['bqjzxefpplfpxmoswnxy.supabase.co'],
     },
   };
 export default nextConfig;

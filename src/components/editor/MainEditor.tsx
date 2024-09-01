@@ -4,11 +4,19 @@ import { File, Folder, workspace } from '@/lib/supabase/supabase.types'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import "quill/dist/quill.snow.css"
 import { Button } from '../ui/button';
-import { deleteFile, deleteFolder, getFileDetails, getFolderDetails, getWorkspaceDetails, updateFile, updateFolder } from '@/lib/supabase/queries';
+import { deleteFile, deleteFolder, getFileDetails, getFolderDetails, getWorkspaceDetails, updateFile, updateFolder, updateWorkspace } from '@/lib/supabase/queries';
 import { useRouter } from 'next/navigation';
 import { useSocket } from '@/lib/providers/socket-provider';
 import { useSupabaseUser } from '@/lib/providers/supabase-user-provider';
 import BreadCrumbs from './BreadCrumbs';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { Badge } from '../ui/badge';
+import Image from 'next/image';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import EmojiPicker from '../global/emoji-picker';
+import BannerUpload from '../banner/BannerUpload';
+import { XCircleIcon } from 'lucide-react';
 interface MainEditorProps{
     dirDetails : File | Folder | workspace;
     fileId:string;
@@ -39,8 +47,49 @@ function MainEditor({dirDetails,dirType,fileId}:MainEditorProps) {
     const saveTimerRef = useRef<ReturnType<typeof setTimeout>>()
     const [quill,setQuill] = useState<any>(null)
     const {state,workspaceId,folderId,dispatch} = useAppState()
+    const supabase = createClientComponentClient()
+    const [collborators,setCollaborators] = useState<{id:string;email:string;avatarUrl:string}[]>()
     const router = useRouter()
+    const [saving,setSaving] = useState(false)
+    const [deletingBanner,setDeletingbanner] = useState(false)
     //onCLick
+    async function deleteBanner(){
+        if (!fileId) return
+        const bannerDeleteFunction = async()=>{
+            await supabase.storage.from("file-banners").remove([dirDetails.bannerUrl!])
+        }
+        if (dirType === "file"){
+            if (!workspaceId || !folderId) return
+            dispatch({
+                type:"UPDATE_FILE_DATA",
+                payload:{
+                    workspaceId,folderId,fileId,file:{bannerUrl:""}
+                }
+            })
+            await bannerDeleteFunction()
+            await updateFile({bannerUrl:""},fileId)
+        }else if(dirType==="folder"){
+            if (!workspaceId) return
+            dispatch({
+                type:"UPDATE_FOLDER_DATA",
+                payload:{
+                    workspaceId,folderId:fileId,folder:{bannerUrl:""}
+                }
+            })
+            await bannerDeleteFunction()
+            await updateFolder({bannerUrl:""},fileId)
+        }else if (dirType === "workspace"){
+            if (!workspaceId) return
+            dispatch({
+                type:"UPDATE_WORKSPACE_DATA",
+                payload:{
+                    workspaceId,workspace:{bannerUrl:""}
+                }
+            })
+            await bannerDeleteFunction()
+            await updateWorkspace({bannerUrl:""},workspaceId)
+        }
+    }
     const handleRestore = async()=>{
         if (dirType=== "file"){
             if (!folderId || !workspaceId) return
@@ -88,6 +137,42 @@ function MainEditor({dirDetails,dirType,fileId}:MainEditorProps) {
 
         }
     }
+    //onChange 
+    async function iconOnChange(icon:string) {
+        if (!fileId) return
+        if (dirType === "file"){
+            if (!workspaceId || !folderId) return
+            dispatch({
+                type:"UPDATE_FILE_DATA",
+                payload:{
+                    workspaceId,folderId,fileId,file:{iconId:icon}
+                }
+            })
+            await updateFile({iconId:icon},fileId)
+        }
+        if (dirType === "folder"){
+            if (!workspaceId) return
+            dispatch({
+                type:"UPDATE_FOLDER_DATA",
+                payload:{
+                    workspaceId,folderId:fileId,folder:{iconId:icon}
+                }
+            })
+            await updateFolder({iconId:icon},fileId)
+        }
+        if (dirType ==="workspace"){
+            if (!workspaceId) return
+            dispatch({
+                type:"UPDATE_WORKSPACE_DATA",
+                payload:{
+                    workspaceId,workspace:{iconId:icon}
+                }
+            })
+
+            await updateWorkspace({iconId:icon},fileId)
+        }
+    }
+
     //wrapperRef
     const details = useMemo(() => {
         let selectedDir;
@@ -242,10 +327,77 @@ function MainEditor({dirDetails,dirType,fileId}:MainEditorProps) {
                 </article>
             )}
             <div className='flex flex-col-reverse sm:flex-row sm:justify-between justify-center sm:items-center sm:p-2 p-8'>
+                <div>
                 <BreadCrumbs/>
+                </div>
+                <div className='flex items-center gap-4'>
+                    <div className='flex items-center justify-center h-10'>
+                        {collborators?.map(collborator=>(
+                            <TooltipProvider key={collborator.id}>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Avatar className='-ml-3 bg-background border-2 flex items-center justify-center border-white h-8 w-8 rounded-full'>
+                                        <AvatarImage src={collborator.avatarUrl?collborator.avatarUrl:""} className='rounded-full'/>
+                                        <AvatarFallback >U</AvatarFallback>
+                                    </Avatar>                                    
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    {collborator.email.substring(0,2).toUpperCase()}
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                        ))}
+                        {saving ?(
+                            <Badge variant={"secondary"} className='bg-orange-600 top-4 text-white right-4 z-50'>
+                                Saving...
+                            </Badge>
+                        ):(
+                            <Badge className='bg-emerald-600 top-4 text-white right-4 z-50' variant={"secondary"}>
+                                Saved
+                            </Badge>
+                        )}
+                    </div>
+                </div>
             </div>
         </div>
+        
+        
+            {details.bannerUrl && (
+                <div className='relative w-full h-[200px]'>
+                    <Image fill src={supabase.storage.from("file-banners").getPublicUrl(details.bannerUrl).data.publicUrl} alt='BannerImage' className='w-full md:h-48 h-20 object-cover'/>
+                </div>
+            )}
+
         <div className='flex justify-center items-center flex-col mt-2 relative'>
+            <div className='w-full self-center flex flex-col max-w-[800px] px-7 lg:my-8'>
+                <div className='text-[80px]'>
+                    <EmojiPicker getValue={iconOnChange}>
+                        <div className='w-[100px] cursor-pointer transition-colors h-[100px] flex items-center justify-center hover:bg-muted rounded-xl'>
+                            {details.iconId}
+                        </div>
+                    </EmojiPicker>
+                </div>
+                <div className='flex'>
+                    <BannerUpload details={details} id={fileId} dirType={dirType} className="mt-2 text-sm text-muted-foreground p-2 hover:text-card-foreground rounded-md">
+                        {!details.bannerUrl ?"Upload Banner" :"Update Banner"}
+                    </BannerUpload>
+                    {details.bannerUrl && (
+                        <Button disabled={deletingBanner} onClick={deleteBanner} variant={"ghost"} className='flex gap-2 hover:bg-background items-center justify-center mt-2 text-sm text-muted-foreground w-36 p-2 rounded-md'>
+                            <XCircleIcon size={16}/>
+                            <span className='whitespace-nowrap font-normal'>
+                            Remove Banner
+                            </span>
+                        </Button>
+                    )}
+                    
+                </div>
+                <span className='text-muted-foreground text-3xl font-bold h-9 '>
+                    {details?.title}
+                </span>
+                <span className='text-muted-foreground text-sm'>
+                    {dirType.toUpperCase()}
+                </span>
+            </div>
             <div id='container' className='max-w-[800px]' ref={wrapperRef}></div>
         </div>
     </>
