@@ -11,6 +11,7 @@ import PlanUsage from './PlanUsage';
 import NativeNavigation from './NativeNavigation';
 import FoldersDropdownList from './FolderDropdownList';
 import { ScrollArea } from '../ui/scroll-area';
+import UserCard from '../settings/UserButton';
 interface SidebarProps{
     params:{
         workspaceId: string
@@ -30,7 +31,7 @@ async function Sidebar({params,className}:SidebarProps) {
         params.workspaceId
       );
   return (
-    <aside className={twMerge('hidden sm:flex sm:flex-col sm:items-center relative shrink-0 sm:gap-4 w-[280px] !justify-between',className)}>
+    <aside className={twMerge('hidden p-4 sm:flex sm:flex-col sm:items-center relative shrink-0 sm:gap-4 w-[280px] !justify-between',className)}>
         <div>
             <DropdownWorkspace sharedWorkspaces={sharedWorkspaces} collaboratingWorkspaces={collaboratingWorkspaces} privateWorkspaces={privateWorkspaces} defaultValue={[...privateWorkspaces,
                 ...collaboratingWorkspaces,
@@ -41,6 +42,7 @@ async function Sidebar({params,className}:SidebarProps) {
           subscription={subscriptionData}
         />
         <NativeNavigation myWorkspaceId={params.workspaceId} />
+        
         <FoldersDropdownList
             workspaceFolders={workspaceFolderData || []}
             workspaceId={params.workspaceId}
@@ -64,6 +66,7 @@ async function Sidebar({params,className}:SidebarProps) {
           
         </ScrollArea> */}
         </div>
+        <UserCard subscription={subscriptionData} />
     </aside>
   )
 }

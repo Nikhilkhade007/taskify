@@ -20,10 +20,12 @@ import { Button } from '../ui/button';
 import { HomeIcon, InfoIcon, MenuIcon, ShoppingCart, UsersIcon } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
 import { ThemeToggler } from '../global/ThemeToggler';
+import { useSupabaseUser } from '@/lib/providers/supabase-user-provider';
 
 
 
 const Header = () => {
+  const {user} = useSupabaseUser()
   const [path, setPath] = useState('#home');
   return (
   
@@ -94,9 +96,9 @@ const Header = () => {
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
-        <div className='flex gap-2'>
+          {user?(
+<div className="hidden lg:flex  gap-4">
           <ThemeToggler/>
-          <div className="hidden lg:flex  gap-4">
             <Button variant="outline" className='text-xl  font-normal'>
               <Link href={"/signup"}>Sign Up</Link>
             </Button>
@@ -106,7 +108,8 @@ const Header = () => {
               </Link>
               </Button>
           </div>
-        </div>
+          ):""}
+          
         <Sheet>
           <SheetTrigger asChild>
             <Button variant={"outline"} size={"icon"} className='lg:hidden'>
