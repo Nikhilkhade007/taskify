@@ -8,6 +8,7 @@ import { deleteFile, deleteFolder, getFileDetails, getFolderDetails, getWorkspac
 import { useRouter } from 'next/navigation';
 import { useSocket } from '@/lib/providers/socket-provider';
 import { useSupabaseUser } from '@/lib/providers/supabase-user-provider';
+import BreadCrumbs from './BreadCrumbs';
 interface MainEditorProps{
     dirDetails : File | Folder | workspace;
     fileId:string;
@@ -223,7 +224,7 @@ function MainEditor({dirDetails,dirType,fileId}:MainEditorProps) {
       },[quill,socket,fileId,user,details])
   return (
     <>
-        {isConnected?"connected":"NotConnected"}
+        {/* {isConnected?"connected":"NotConnected"} */}
         <div className='relative'>
             {details.inTash && (
                 <article className='py-2 z-40 bg-[#E85757] flex md:flex-row flex-col justify-center items-center gap-4 flex-wrap'>
@@ -240,6 +241,9 @@ function MainEditor({dirDetails,dirType,fileId}:MainEditorProps) {
                     </div>
                 </article>
             )}
+            <div className='flex flex-col-reverse sm:flex-row sm:justify-between justify-center sm:items-center sm:p-2 p-8'>
+                <BreadCrumbs/>
+            </div>
         </div>
         <div className='flex justify-center items-center flex-col mt-2 relative'>
             <div id='container' className='max-w-[800px]' ref={wrapperRef}></div>
