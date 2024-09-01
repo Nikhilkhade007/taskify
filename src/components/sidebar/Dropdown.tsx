@@ -42,6 +42,7 @@ const Dropdown = ({title,id,iconId,children,disabled,listType}:DropdownProps) =>
     setIsEditing(true)
   }
   async function handleBlur(){
+    if (!isEditing) return
     setIsEditing(false)
     const fid = id.split("folder")
     if (fid?.length === 1){
@@ -71,9 +72,7 @@ const Dropdown = ({title,id,iconId,children,disabled,listType}:DropdownProps) =>
     }
   }
 
-  const addFile = ()=>{
 
-  }
   //onClick
   const handleAddFile = async()=>{
     if (!workspaceId) return

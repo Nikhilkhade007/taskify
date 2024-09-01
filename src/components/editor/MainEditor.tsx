@@ -1,11 +1,13 @@
 'use client'
 import { useAppState } from '@/lib/providers/state-provider';
 import { File, Folder, workspace } from '@/lib/supabase/supabase.types'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import "quill/dist/quill.snow.css"
 import { Button } from '../ui/button';
-import { deleteFile, deleteFolder, updateFile, updateFolder } from '@/lib/supabase/queries';
+import { deleteFile, deleteFolder, getFileDetails, getFolderDetails, getWorkspaceDetails, updateFile, updateFolder } from '@/lib/supabase/queries';
 import { useRouter } from 'next/navigation';
+import { useSocket } from '@/lib/providers/socket-provider';
+import { useSupabaseUser } from '@/lib/providers/supabase-user-provider';
 interface MainEditorProps{
     dirDetails : File | Folder | workspace;
     fileId:string;
@@ -31,6 +33,9 @@ var TOOLBAR_OPTIONS = [
     ['clean'], // remove formatting button
   ];
 function MainEditor({dirDetails,dirType,fileId}:MainEditorProps) {
+    const {socket,isConnected} = useSocket()
+    const user = useSupabaseUser()
+    const saveTimerRef = useRef<ReturnType<typeof setTimeout>>()
     const [quill,setQuill] = useState<any>(null)
     const {state,workspaceId,folderId,dispatch} = useAppState()
     const router = useRouter()
@@ -136,8 +141,89 @@ function MainEditor({dirDetails,dirType,fileId}:MainEditorProps) {
           setQuill(q);
         }
       }, []);
+
+      //useEffect
+      useEffect(()=>{
+        let selectedDir;
+        async function fetchInformation(){
+            if (dirType === "file"){
+                const {data:selectedDir,error} = await getFileDetails(fileId)
+                if (error || !selectedDir){
+                    return router.replace("/dashboard")
+                }
+                if (!selectedDir[0]){
+                    if (!workspaceId) return
+                    return router.replace(`/dashboard/${workspaceId}`)
+                }
+                if (!workspaceId || quill === null) return 
+                if (!selectedDir[0].data) return
+                quill.setContents(JSON.parse(selectedDir[0].data || ''))
+                dispatch({
+                    type:"UPDATE_FILE_DATA",
+                    payload:{
+                        workspaceId,folderId:selectedDir[0].folderId,fileId,file:{data:selectedDir[0].data }
+                    }
+                })
+            }
+            if (dirType == "folder"){
+                const {data:selectedDir,error} = await getFolderDetails(fileId)
+                if (error || !selectedDir) {
+                    return router.replace("/dashoboard")
+                }
+                if (!selectedDir[0]){
+                    router.replace(`/dashboard/${workspaceId}`)
+                }
+                if (quill === null ) return 
+                if (!selectedDir[0].data || !workspaceId) return
+                quill.setContents(JSON.parse(selectedDir[0].data || ""))
+                dispatch({
+                    type:"UPDATE_FOLDER_DATA",
+                    payload:{
+                        workspaceId,folderId:fileId,folder:{
+                            data: selectedDir[0].data || ""
+                        }
+                    }
+                })
+            }
+            if (dirType === "workspace"){
+                const {data:selectedDir,error} = await getWorkspaceDetails(fileId)
+                if (error || !selectedDir) {
+                    return router.replace("dashboard")
+                }
+                if (!selectedDir[0]) {
+                    return
+                    
+                }
+                if (quill=== null || !workspaceId) return
+                if (!selectedDir[0].data) return
+                dispatch({
+                    type:"UPDATE_WORKSPACE_DATA",
+                    payload:{
+                        workspaceId,workspace:{data:selectedDir[0].data || ""}
+                    }
+                })
+            }
+        }
+        fetchInformation()
+      },[state,workspaceId,quill,dirType])
+
+      useEffect(()=>{
+        if (socket === null || quill === null || fileId ===  null) return
+        socket.emit('create-room',fileId)
+      },[socket,quill,fileId])
+      useEffect(()=>{
+        if (quill === null || socket === null || !fileId || !user) return
+        const selectionChangeHandler = ()=>{
+
+        }
+        const quillHandler = (delta:any,oldDelta:any,source:any)=>{
+            if (source !== 'user') return
+            if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
+        }
+      },[quill,socket,fileId,user,details])
   return (
     <>
+        {isConnected?"connected":"NotConnected"}
         <div className='relative'>
             {details.inTash && (
                 <article className='py-2 z-40 bg-[#E85757] flex md:flex-row flex-col justify-center items-center gap-4 flex-wrap'>
