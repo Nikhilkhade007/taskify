@@ -96,7 +96,7 @@ const Header = () => {
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
-          {user?(
+          {!user?(
 <div className="hidden lg:flex  gap-4">
           <ThemeToggler/>
             <Button variant="outline" className='text-xl  font-normal'>

@@ -12,11 +12,13 @@ import { createFolder } from '@/lib/supabase/queries';
 import { toast } from '../ui/use-toast';
 import { Accordion } from '../ui/accordion';
 import Dropdown from './Dropdown';
+import useSupabaseRealtime from '@/lib/hooks/UseSupabaseRealtime';
 interface FolderDropdownListProps{
   workspaceFolders:Folder[];
   workspaceId:string;
 }
 function FolderDropdownList({workspaceFolders,workspaceId}:FolderDropdownListProps) {
+  useSupabaseRealtime()
   const {state,dispatch,folderId} = useAppState();
   const {subscription} = useSupabaseUser()
   const [folders,setFolders] = useState<Folder[] | []>([])
