@@ -167,7 +167,8 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
         type: 'DELETE_FILE',
         payload: { fileId, folderId, workspaceId },
       });
-      await deleteFile(fileId);
+      const data = await deleteFile(fileId);
+      console.log(data)
       router.replace(`/dashboard/${workspaceId}`);
     }
     if (dirType === 'folder') {
@@ -176,7 +177,8 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
         type: 'DELETE_FOLDER',
         payload: { folderId: fileId },
       });
-      await deleteFolder(fileId);
+      const data = await deleteFolder(fileId);
+      console.log(data)
       router.replace(`/dashboard/${workspaceId}`);
     }
   };

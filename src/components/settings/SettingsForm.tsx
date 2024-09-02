@@ -55,6 +55,7 @@ import Link from 'next/link';
 import { postData } from '@/lib/utils';
 import SearchCollaborator from '../global/searchCollaborator';
 import LogoutButton from '../global/LogoutButton';
+import clsx from 'clsx';
 
 const SettingsForm = () => {
   const { toast } = useToast();
@@ -71,7 +72,9 @@ const SettingsForm = () => {
   const [uploadingProfilePic, setUploadingProfilePic] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [loadingPortal, setLoadingPortal] = useState(false);
-
+  const isOwner = workspaceDetails?.workspaceOwner == user?.id
+  console.log("Owner",workspaceDetails?.workspaceOwner)
+  console.log("User",user?.id)
   //WIP PAYMENT PORTAL
 
   const redirectToCustomerPortal = async () => {
@@ -164,6 +167,7 @@ const SettingsForm = () => {
   };
 
   const WorkspaceDelete = async()=>{
+    if (!isOwner) return
     if (!workspaceId)return
     dispatch({
       type:"DELETE_WORKSPACE",
@@ -361,12 +365,15 @@ const SettingsForm = () => {
             </div>
           </div>
         )}
-        <Alert variant={'destructive'}>
+        <Alert className={clsx("",{
+          "hidden":!isOwner
+        })} variant={'destructive'}>
           <AlertDescription>
             Warning! deleting you workspace will permanantly delete all data
             related to this workspace.
           </AlertDescription>
           <Button
+          disabled={!isOwner}
             type="submit"
             size={'sm'}
             variant={'destructive'}
