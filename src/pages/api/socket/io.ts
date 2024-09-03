@@ -27,6 +27,9 @@ const ioHandler = (req:NextApiRequest,res:NextApiResponseServerIo)=>{
             s.on('send-cursor-move',(range,fileId,cursorId)=>{
                 s.to(fileId).emit('receive-cursor-move',range,fileId,cursorId)
             });
+            s.on("send-mouse-move", (mousePosition, fileId, cursorId) => {
+                s.to(fileId).emit("receive-mouse-move", mousePosition, fileId, cursorId);
+              });
         });
         res.socket.server.io = io;
     }

@@ -117,8 +117,44 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
     } as workspace | Folder | File;
   }, [state, workspaceId, folderId]);
 
+  // const breadCrumbs = useMemo(() => {
+  //   if (!pathname || !state.workspaces || !workspaceId) return;
+  //   const segments = pathname
+  //     .split('/')
+  //     .filter((val) => val !== 'dashboard' && val);
+  //   const workspaceDetails = state.workspaces.find(
+  //     (workspace) => workspace.id === workspaceId
+  //   );
+  //   const workspaceBreadCrumb = workspaceDetails
+  //     ? `${workspaceDetails.iconId} ${workspaceDetails.title}`
+  //     : '';
+  //   if (segments.length === 1) {
+  //     return workspaceBreadCrumb;
+  //   }
 
-  //
+  //   const folderSegment = segments[1];
+  //   const folderDetails = workspaceDetails?.folders.find(
+  //     (folder) => folder.id === folderSegment
+  //   );
+  //   const folderBreadCrumb = folderDetails
+  //     ? `/ ${folderDetails.iconId} ${folderDetails.title}`
+  //     : '';
+
+  //   if (segments.length === 2) {
+  //     return `${workspaceBreadCrumb} ${folderBreadCrumb}`;
+  //   }
+
+  //   const fileSegment = segments[2];
+  //   const fileDetails = folderDetails?.files.find(
+  //     (file) => file.id === fileSegment
+  //   );
+  //   const fileBreadCrumb = fileDetails
+  //     ? `/ ${fileDetails.iconId} ${fileDetails.title}`
+  //     : '';
+
+  //   return `${workspaceBreadCrumb} ${folderBreadCrumb} ${fileBreadCrumb}`;
+  // }, [state, pathname, workspaceId]);
+
   const wrapperRef = useCallback(async (wrapper: any) => {
     if (typeof window !== 'undefined') {
       if (wrapper === null) return;
@@ -167,8 +203,7 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
         type: 'DELETE_FILE',
         payload: { fileId, folderId, workspaceId },
       });
-      const data = await deleteFile(fileId);
-      console.log(data)
+      await deleteFile(fileId);
       router.replace(`/dashboard/${workspaceId}`);
     }
     if (dirType === 'folder') {
@@ -177,8 +212,7 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
         type: 'DELETE_FOLDER',
         payload: { folderId: fileId },
       });
-      const data = await deleteFolder(fileId);
-      console.log(data)
+      await deleteFolder(fileId);
       router.replace(`/dashboard/${workspaceId}`);
     }
   };
@@ -337,13 +371,13 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
     };
   }, [quill, socket, fileId, localCursors]);
 
-  //rooms
+
   useEffect(() => {
     if (socket === null || quill === null || !fileId) return;
     socket.emit('create-room', fileId);
   }, [socket, quill, fileId]);
 
-  //Send quill changes to all clients
+
   useEffect(() => {
     if (quill === null || socket === null || !fileId || !user) return;
 
@@ -472,7 +506,6 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
 
   return (
     <>
-    {isConnected ?"Connected":"Not Connected"}
       <div className="relative">
         {details.inTash && (
           <article
@@ -658,7 +691,7 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
           </div>
           <div className="flex ">
             <BannerUpload
-                details={details}
+              details={details}
               id={fileId}
               dirType={dirType}
               className="mt-2

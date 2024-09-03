@@ -360,3 +360,28 @@ export const getUsersFromSearch = async (email: string) => {
     .where(ilike(users.email, `${email}%`));
   return accounts;
 };
+
+
+export const updateUser = async (userId: string, avatarUrl: string) => {
+  if (!userId || !avatarUrl) return;
+
+  try {
+    const userExists = await db.query.users.findFirst({
+      where: (u, { eq }) => eq(u.id, userId),
+    });
+
+    if (!userExists) {
+      return { data: null, error: 'User not found' };
+    }
+
+    const response = await db
+      .update(users)
+      .set({ avatarUrl })
+      .where(eq(users.id, userId));
+
+    return { data: response, error: null };
+  } catch (error) {
+    console.log(error);
+    return { data: null, error: 'Error updating user' };
+  }
+};

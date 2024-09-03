@@ -23,7 +23,9 @@ import {
   addCollaborators,
   deleteWorkspace,
   getCollaborators,
+  getUsersFromSearch,
   removeCollaborators,
+  updateUser,
   updateWorkspace,
 } from '@/lib/supabase/queries';
 import { v4 } from 'uuid';
@@ -56,6 +58,9 @@ import { postData } from '@/lib/utils';
 import SearchCollaborator from '../global/searchCollaborator';
 import LogoutButton from '../global/LogoutButton';
 import clsx from 'clsx';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { AvatarUploadTypes } from '@/lib/types';
+import { z } from 'zod';
 
 const SettingsForm = () => {
   const { toast } = useToast();
@@ -73,8 +78,7 @@ const SettingsForm = () => {
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [loadingPortal, setLoadingPortal] = useState(false);
   const isOwner = workspaceDetails?.workspaceOwner == user?.id
-  console.log("Owner",workspaceDetails?.workspaceOwner)
-  console.log("User",user?.id)
+  const [avatar_url,setAvatarUrl] = useState("")
   //WIP PAYMENT PORTAL
 
   const redirectToCustomerPortal = async () => {
@@ -160,6 +164,37 @@ const SettingsForm = () => {
     setOpenAlertMessage(false);
   };
 
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState:{isSubmitting:isAvtarUploading,errors}
+} = useForm<z.infer<typeof AvatarUploadTypes>>({
+    mode:"onChange",
+    defaultValues: {profilePicture:""}
+})
+const uploadAvtarPicture: SubmitHandler<
+    z.infer<typeof AvatarUploadTypes>
+  > = async (values) => {
+    const file = values.profilePicture?.[0];
+    if (!file) return
+    const avatarid = v4()
+    try{
+      if (avatar_url){
+        await supabase.storage.from("avatars").remove([avatar_url])
+      }
+      const {data,error} = await supabase.storage.from("avatars").upload(`avatar-${avatarid}`,file,{ cacheControl: '5', upsert: true })
+        if (error) throw new Error();
+        const updateInfo = await updateUser(user?.id!,data.path)
+        if (updateInfo?.error) return
+        console.log("Path in console",data.path)
+        setAvatarUrl(data.path)
+        router.refresh()
+    }catch(e){
+      console.log(e)
+      return
+    }
+  }
   const onPermissionsChange = (val: string) => {
     if (val === 'private') {
       setOpenAlertMessage(true);
@@ -197,6 +232,16 @@ const SettingsForm = () => {
     fetchCollaborators();
   }, [workspaceId,state]);
 
+  useEffect(()=>{
+    const getAvatarData = async()=>{
+      const data= await getUsersFromSearch(user?.email!)
+      console.log(data[0])
+      setAvatarUrl(data[0].avatarUrl!)
+    }
+    
+    getAvatarData()
+    
+  },[avatar_url])
   return (
     <ScrollArea className='h-[400px]'>
     <div className="flex gap-4 m-2 flex-col">
@@ -387,7 +432,37 @@ const SettingsForm = () => {
             Delete Workspace
           </Button>
         </Alert>
-        
+        <p className='flex items-center gap-2 mt-6'>
+          <UserIcon/>Profile
+        </p>
+        <Separator/>
+        <div className='flex-col flex justify-center gap-2'>
+          <div className='flex items-center'>
+          <Avatar>
+            <AvatarImage  src={supabase.storage.from("avatars").getPublicUrl(avatar_url).data.publicUrl}/>
+            <AvatarFallback>{user?.email?.substring(0,2).toUpperCase()}</AvatarFallback>
+          </Avatar>
+          <div className='flex flex-col ml-6'>
+            <span className='text-muted-foreground cursor-not-allowed'>
+              {user?.email}
+            </span>
+          </div>
+          </div>
+            <Label htmlFor='profilePicture' className='text-sm text-muted-foreground'>
+                Profile Picture
+            </Label>
+            <form className='flex gap-2' onSubmit={handleSubmit(uploadAvtarPicture)}>
+              <div>
+              <Input id='profilePicture' type='file' accept='image/*' placeholder='Profile picture' disabled={isAvtarUploading} {...register("profilePicture",{required:"Banner Image is required!"})}/>
+              <small className='text-red-500'>
+                {errors.profilePicture?.message?.toString()}
+              </small>
+              </div>
+              <Button disabled={isAvtarUploading} type='submit'>
+                {isAvtarUploading?"Uploading....":"Upload"}
+              </Button>
+            </form> 
+        </div>
       </>
       <AlertDialog open={openAlertMessage}>
         <AlertDialogContent>
@@ -414,3 +489,5 @@ const SettingsForm = () => {
 };
 
 export default SettingsForm;
+
+

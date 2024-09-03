@@ -14,6 +14,9 @@ export const CreateWorkspaceFormSchema = z.object({
 export const BannerUploadTypes =z.object({
   banner:z.string().describe("Banner Image")
 })
+export const AvatarUploadTypes = z.object({
+  profilePicture:z.string().describe("Profile Picture")
+})
   export type NextApiResponseServerIo = NextApiResponse & {
     socket: Socket & {
       server: NetServer & {

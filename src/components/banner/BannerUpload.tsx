@@ -4,8 +4,6 @@ import React from 'react'
 import CustomDialogTrigger from '../global/CustomDialogTrigger';
 import BannerUploadForm from './BannerUploadForm';
 
-                    {/* <BannerUpload details={details} id={fileId} dirType={dirType} className="mt-2 text-sm text-muted-foreground p-2 hover:text-card-foreground rounded-md">
-                    </BannerUpload> */}
 interface BannerUploadProps{
     details:appFoldersType|appWorkspacesType|workspace|Folder|File;
     id:string;
