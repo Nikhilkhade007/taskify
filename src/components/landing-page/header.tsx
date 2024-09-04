@@ -17,15 +17,17 @@ import {
 } from '@/components/ui/navigation-menu';
 import { cn } from '@/lib/utils';
 import { Button } from '../ui/button';
-import { HomeIcon, InfoIcon, MenuIcon, ShoppingCart, UsersIcon } from 'lucide-react';
+import { HomeIcon, InfoIcon, LogOut, MenuIcon, ShoppingCart, UserIcon, UsersIcon } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
 import { ThemeToggler } from '../global/ThemeToggler';
 import { useSupabaseUser } from '@/lib/providers/supabase-user-provider';
+import LogoutButton from '../global/LogoutButton';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 
 
 const Header = () => {
-  const {user} = useSupabaseUser()
+  const {user,subscription} = useSupabaseUser()
   const [path, setPath] = useState('#home');
   return (
   
@@ -108,7 +110,35 @@ const Header = () => {
               </Link>
               </Button>
           </div>
-          ):""}
+          ):(
+            <div className='hidden lg:flex items-center gap-2 py-2 px-4 dark:bg-Neutrals/neutrals-12 rounded-3xl'>
+              <aside className='flex gap-2'>
+              <Avatar>
+                <AvatarImage src={""} />
+                <AvatarFallback>
+                  <UserIcon/>
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col">
+                <span className="text-muted-foreground">
+                  {subscription?.status === 'active' ? 'Pro Plan' : 'Free Plan'}
+                </span>
+                <small
+                  className="w-[100px] 
+                overflow-hidden 
+                overflow-ellipsis
+                "
+                >
+                  {user.email}
+                </small>
+              </div>
+              </aside>
+              <LogoutButton>
+                <LogOut/>
+              </LogoutButton>
+              <ThemeToggler/>
+            </div>
+          )}
           
         <Sheet>
           <SheetTrigger asChild>

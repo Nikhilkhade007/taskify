@@ -256,7 +256,7 @@ const Dropdown = ({title,id,iconId,children,disabled,listType}:DropdownProps) =>
             <div className='relative'>
               <EmojiPicker getValue={onEmojiChange}>{iconId}</EmojiPicker>
             </div>
-            <input type='text' value={listType === "folder" ?folderTitle:fileTitle} className={clsx('outline-none overflow-hidden w-[140px] text-Neutrals/neutrals-7',{
+            <input type='text' value={listType === "folder" ?folderTitle:fileTitle} className={clsx('outline-none overflow-ellipsis overflow-hidden w-[140px] text-Neutrals/neutrals-7',{
               'bg-muted cursor-text':isEditing,
               "bg-transparent cursor-pointer":!isEditing
             })} readOnly={!isEditing} onDoubleClick={handleDoubleClicke}
