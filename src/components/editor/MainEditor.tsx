@@ -116,28 +116,72 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
       bannerUrl: dirDetails.bannerUrl,
     } as workspace | Folder | File;
   }, [state, workspaceId, folderId]);
-
-
-  const wrapperRef = useCallback(async (wrapper: any) => {
-    if (typeof window !== 'undefined') {
-      if (wrapper === null) return;
-      wrapper.innerHTML = '';
-      const editor = document.createElement('div');
-      wrapper.append(editor);
-      const Quill = (await import('quill')).default;
-      const QuillCursors = (await import('quill-cursors')).default;
-      Quill.register('modules/cursors', QuillCursors);
-      const q = new Quill(editor, {
-        theme: 'snow',
-        modules: {
-          toolbar: TOOLBAR_OPTIONS,
-          cursors: {
-            transformOnTextChange: true,
-          },
-        },
-      });
-      setQuill(q);
+  const breadCrumbs = useMemo(() => {
+    if (!pathname || !state.workspaces || !workspaceId) return;
+    const segments = pathname
+      .split('/')
+      .filter((val) => val !== 'dashboard' && val);
+    const workspaceDetails = state.workspaces.find(
+      (workspace) => workspace.id === workspaceId
+    );
+    const workspaceBreadCrumb = workspaceDetails
+      ? `${workspaceDetails.iconId} ${workspaceDetails.title}`
+      : '';
+    if (segments.length === 1) {
+      return workspaceBreadCrumb;
     }
+
+    const folderSegment = segments[1];
+    const folderDetails = workspaceDetails?.folders.find(
+      (folder) => folder.id === folderSegment
+    );
+    const folderBreadCrumb = folderDetails
+      ? `/ ${folderDetails.iconId} ${folderDetails.title}`
+      : '';
+
+    if (segments.length === 2) {
+      return `${workspaceBreadCrumb} ${folderBreadCrumb}`;
+    }
+
+    const fileSegment = segments[2];
+    const fileDetails = folderDetails?.files.find(
+      (file) => file.id === fileSegment
+    );
+    const fileBreadCrumb = fileDetails
+      ? `/ ${fileDetails.iconId} ${fileDetails.title}`
+      : '';
+
+    return `${workspaceBreadCrumb} ${folderBreadCrumb} ${fileBreadCrumb}`;
+  }, [state, pathname, workspaceId]);
+  const wrapperRef = useCallback((wrapper: HTMLDivElement | null) => {
+      if (typeof window !== 'undefined') {
+          if (wrapper === null) return;
+  
+          wrapper.innerHTML = ''; // Clear previous content
+          const editor = document.createElement('div');
+          wrapper.append(editor);
+  
+          // Import Quill and QuillCursors dynamically
+          import('quill').then((module) => {
+              const Quill = module.default;
+              return import('quill-cursors').then((cursorsModule) => {
+                  const QuillCursors = cursorsModule.default;
+                  Quill.register('modules/cursors', QuillCursors);
+  
+                  const q = new Quill(editor, {
+                      theme: 'snow',
+                      modules: {
+                          toolbar: TOOLBAR_OPTIONS,
+                          cursors: {
+                              transformOnTextChange: true,
+                          },
+                      },
+                  });
+  
+                  setQuill(q); // Assuming setQuill is defined in your component
+              });
+          });
+      }
   }, []);
 
   const restoreFileHandler = async () => {
@@ -536,7 +580,7 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
         p-8"
         >
           <div>
-            <BreadCrumbs/>
+            {/* <BreadCrumbs/> */}
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center justify-center h-10">
