@@ -10,6 +10,7 @@ import {
   Briefcase,
   CreditCard,
   ExternalLink,
+  ExternalLinkIcon,
   Lock,
   LogOut,
   Plus,
@@ -61,11 +62,12 @@ import clsx from 'clsx';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { AvatarUploadTypes } from '@/lib/types';
 import { z } from 'zod';
+import { useSubscriptionModal } from '@/lib/providers/subscription-model-provider';
 
 const SettingsForm = () => {
   const { toast } = useToast();
   const { user, subscription } = useSupabaseUser();
-
+  const {open,setOpen} = useSubscriptionModal()
   const router = useRouter();
   const supabase = createClientComponentClient();
   const { state, workspaceId, dispatch } = useAppState();
@@ -94,6 +96,7 @@ const SettingsForm = () => {
     }
     setLoadingPortal(false);
   };
+  
   //addcollborators
   const addCollaborator = async (profile: User) => {
     if (!workspaceId) return;
@@ -275,7 +278,7 @@ const uploadAvtarPicture: SubmitHandler<
           accept="image/*"
           placeholder="Workspace Logo"
           onChange={onChangeWorkspaceLogo}
-          disabled={uploadingLogo }
+          disabled={uploadingLogo || subscription?.status !== "active"}
         />
         {subscription?.status !== 'active' && (
           <small className="text-muted-foreground">
@@ -463,6 +466,48 @@ const uploadAvtarPicture: SubmitHandler<
               </Button>
             </form> 
         </div>
+        <div className='flex items-center'>
+          <span>LogOut</span>
+          <LogoutButton>
+          <div className='flex items-center justify-center '>
+            <LogOut/>
+          </div>
+        </LogoutButton>
+        </div>
+        <p className='flex items-center gap-2 mt-6 '>
+            <CreditCard size={20}/>
+            <span>Billing and Plan</span>
+        </p>
+        <Separator/>
+        <p className='text-muted-foreground'>
+          You are currently on a{" "}
+          {subscription?.status === "active" ? "Pro " :"Free "}
+          Plan
+        </p>
+        <Link href={"/"} target='_blank' className='text-muted-foreground flex flex-row items-center gap-2'>
+        View Plan <ExternalLinkIcon size={20}/></Link>
+        {
+          subscription?.status === "active" ?(
+            <div>
+            <Button
+              type="button"
+              size="sm"
+              variant={'secondary'}
+              disabled={loadingPortal}
+              className="text-sm"
+              onClick={redirectToCustomerPortal}
+            >
+              Manage Subscription
+            </Button>
+          </div>
+          ):(
+            <div>
+              <Button type='button' size={"sm"} variant={"secondary"} className='sm' onClick={()=>setOpen(true)}>
+                Start Plan
+              </Button>
+            </div>
+          )
+        }
       </>
       <AlertDialog open={openAlertMessage}>
         <AlertDialogContent>

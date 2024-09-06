@@ -3,6 +3,7 @@ import Link from 'next/link';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 import Settings from '../settings/settings';
+import Trash from '../trash/trash';
 
 interface NativeNavigationProps {
   myWorkspaceId: string;
@@ -46,7 +47,7 @@ const NativeNavigation: React.FC<NativeNavigationProps> = ({
           </li>
         </Settings>
 
-        <Link href={"/"}>
+        <Trash>
           <li
             className="group/native
             flex
@@ -58,7 +59,7 @@ const NativeNavigation: React.FC<NativeNavigationProps> = ({
             <TrashIcon />
             <span>Trash</span>
           </li>
-        </Link>
+        </Trash>
       </ul>
     </nav>
   );

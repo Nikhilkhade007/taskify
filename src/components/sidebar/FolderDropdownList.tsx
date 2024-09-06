@@ -13,6 +13,8 @@ import { toast } from '../ui/use-toast';
 import { Accordion } from '../ui/accordion';
 import Dropdown from './Dropdown';
 import useSupabaseRealtime from '@/lib/hooks/UseSupabaseRealtime';
+import { ScrollArea } from '../ui/scroll-area';
+import { useSubscriptionModal } from '@/lib/providers/subscription-model-provider';
 interface FolderDropdownListProps{
   workspaceFolders:Folder[];
   workspaceId:string;
@@ -22,9 +24,11 @@ function FolderDropdownList({workspaceFolders,workspaceId}:FolderDropdownListPro
   const {state,dispatch,folderId} = useAppState();
   const {subscription} = useSupabaseUser()
   const [folders,setFolders] = useState<Folder[] | []>([])
+  const {open,setOpen} = useSubscriptionModal()
   //onclick
   const hadleAddFolder = async()=>{
     if (folders.length >= 3 && !subscription){
+      setOpen(true)
       return
     }
     const newFolder:Folder = {
@@ -84,11 +88,16 @@ function FolderDropdownList({workspaceFolders,workspaceId}:FolderDropdownListPro
         <Plus size={14} onClick={hadleAddFolder} className='group-hover/title:inline-block hidden cursor-pointer'/>
       </TooltipComponent>
     </div>
+    <ScrollArea className=' relative h-[250px]'>
     <Accordion type='multiple' defaultValue={[folderId || ""]} className='pb-20'>
         {folders.filter(folder=> !folder.inTash).map(folder=>(
           <Dropdown key={folder.id} title={folder.title} id={folder.id} iconId={folder.iconId} listType='folder'/>
         ))}
       </Accordion>
+      <div className='absolute bottom-0 h-20 bg-gradient-to-t 
+          from-background 
+          to-transparent  right-0 left-0'></div>
+    </ScrollArea>
 
   </>
   )

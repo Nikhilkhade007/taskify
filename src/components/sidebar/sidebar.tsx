@@ -47,24 +47,7 @@ async function Sidebar({params,className}:SidebarProps) {
             workspaceFolders={workspaceFolderData || []}
             workspaceId={params.workspaceId}
           />
-        {/* <ScrollArea
-          className="relative
-          h-[450px]
-        "
-        >
-          <div
-            className="pointer-events-none 
-          w-full 
-          bottom-0 
-          h-20 
-          bg-gradient-to-t 
-          from-background 
-          to-transparent 
-          z-40"
-          />
-          
-          
-        </ScrollArea> */}
+        
         </div>
         <UserCard subscription={subscriptionData} />
     </aside>
