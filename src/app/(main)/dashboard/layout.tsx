@@ -1,5 +1,6 @@
 import { ToastProvider } from '@/components/ui/toast'
 import { Toaster } from '@/components/ui/toaster'
+import LiveBlockProvider from '@/lib/providers/liveblocksProvider'
 import { SubscriptionModalProvider } from '@/lib/providers/subscription-model-provider'
 import { getActiveProductsWithPrice } from '@/lib/supabase/queries'
 import React from 'react'
@@ -12,12 +13,14 @@ async function Layout({children,params}:layoutProps) {
   if (error) throw new Error();
   return (
     <main className='flex overflow-hidden h-screen'>
+      <LiveBlockProvider>
       <SubscriptionModalProvider products={products}>
       <ToastProvider>
         {children}
         <Toaster/>
       </ToastProvider>
       </SubscriptionModalProvider>
+      </LiveBlockProvider>
     </main>
   )
 }

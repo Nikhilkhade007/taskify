@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useTransition } from 'react';
 import { useToast } from '../ui/use-toast';
 import { useAppState } from '@/lib/providers/state-provider';
 import { User, workspace } from '@/lib/supabase/supabase.types';
@@ -24,6 +24,8 @@ import {
   addCollaborators,
   deleteWorkspace,
   getCollaborators,
+  getIdsByWorkspace,
+  getUserById,
   getUsersFromSearch,
   removeCollaborators,
   updateUser,
@@ -63,6 +65,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { AvatarUploadTypes } from '@/lib/types';
 import { z } from 'zod';
 import { useSubscriptionModal } from '@/lib/providers/subscription-model-provider';
+import { addCollaboratorsInFirebase, deleteWorkspacesInFirebase, removeCollaboratorsFromFB } from '@/lib/server-action/action';
 
 const SettingsForm = () => {
   const { toast } = useToast();
@@ -81,7 +84,7 @@ const SettingsForm = () => {
   const [loadingPortal, setLoadingPortal] = useState(false);
   const isOwner = workspaceDetails?.workspaceOwner == user?.id
   const [avatar_url,setAvatarUrl] = useState("")
-  //WIP PAYMENT PORTAL
+  const [isDeleting,startDeleting] = useTransition()
 
   const redirectToCustomerPortal = async () => {
     setLoadingPortal(true);
@@ -97,11 +100,12 @@ const SettingsForm = () => {
     setLoadingPortal(false);
   };
   
-  //addcollborators
   const addCollaborator = async (profile: User) => {
     if (!workspaceId) return;
     await addCollaborators([profile], workspaceId);
     setCollaborators([...collaborators, profile]);
+    const allRooms = await getIdsByWorkspace(workspaceId)
+    await addCollaboratorsInFirebase(allRooms!,profile.email!)
     router.refresh()
   };
 
@@ -111,6 +115,7 @@ const SettingsForm = () => {
     if (collaborators.length === 1) {
       setPermissions('private');
     }
+    await removeCollaboratorsFromFB(workspaceId,[user.email!])
     await removeCollaborators([user], workspaceId);
     setCollaborators(
       collaborators.filter((collaborator) => collaborator.id !== user.id)
@@ -161,6 +166,8 @@ const SettingsForm = () => {
   const onClickAlertConfirm = async () => {
     if (!workspaceId) return;
     if (collaborators.length > 0) {
+      const collaboratorsEmail = collaborators.map(c=>c.email || "" )
+      await removeCollaboratorsFromFB(workspaceId,collaboratorsEmail!)
       await removeCollaborators(collaborators, workspaceId);
     }
     setPermissions('private');
@@ -204,9 +211,12 @@ const uploadAvtarPicture: SubmitHandler<
     } else setPermissions(val);
   };
 
-  const WorkspaceDelete = async()=>{
-    if (!isOwner) return
+  const WorkspaceDelete = ()=>{
+    startDeleting(async()=>{
+      if (!isOwner) return
     if (!workspaceId)return
+    const allRooms = await getIdsByWorkspace(workspaceId)
+    await deleteWorkspacesInFirebase(allRooms!)
     dispatch({
       type:"DELETE_WORKSPACE",
       payload: workspaceId
@@ -214,6 +224,7 @@ const uploadAvtarPicture: SubmitHandler<
     await deleteWorkspace(workspaceId)
     router.refresh()
     router.push("/dashboard")
+    })
   }
 
   useEffect(() => {
@@ -221,6 +232,7 @@ const uploadAvtarPicture: SubmitHandler<
       (workspace) => workspace.id === workspaceId
     );
     if (showingWorkspace) setWorkspaceDetails(showingWorkspace);
+
   }, [workspaceId, state.workspaces]);
 
   useEffect(() => {
@@ -239,7 +251,8 @@ const uploadAvtarPicture: SubmitHandler<
     const getAvatarData = async()=>{
       const data= await getUsersFromSearch(user?.email!)
       console.log(data[0])
-      setAvatarUrl(data[0].avatarUrl!)
+      setAvatarUrl(data[0]?.avatarUrl!)
+      
     }
     
     getAvatarData()
@@ -318,7 +331,7 @@ const uploadAvtarPicture: SubmitHandler<
               </SelectItem>
               <SelectItem value="shared">
                 <div className="p-2 flex gap-4 justify-center items-center">
-                  <Share></Share>
+                  <Share/>
                   <article className="text-left flex flex-col">
                     <span>Shared</span>
                     <span>You can invite collaborators.</span>
@@ -421,7 +434,7 @@ const uploadAvtarPicture: SubmitHandler<
             related to this workspace.
           </AlertDescription>
           <Button
-          disabled={!isOwner}
+          disabled={!isOwner||isDeleting}
             type="submit"
             size={'sm'}
             variant={'destructive'}
@@ -432,7 +445,7 @@ const uploadAvtarPicture: SubmitHandler<
             border-destructive"
             onClick={WorkspaceDelete}
           >
-            Delete Workspace
+            {isDeleting?"Deleting....":"Delete workspace"}
           </Button>
         </Alert>
         <p className='flex items-center gap-2 mt-6'>

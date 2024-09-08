@@ -22,6 +22,7 @@ import { ScrollArea } from '../ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { useToast } from '../ui/use-toast';
 import { useAppState } from '@/lib/providers/state-provider';
+import { addCollaboratorsInFirebase, addMultipleCollaborators, createWorkSpaceInFirebase } from '@/lib/server-action/action';
 
 const CreateWorkspace = () => {
   const { user } = useSupabaseUser();
@@ -31,13 +32,16 @@ const CreateWorkspace = () => {
   const [title, setTitle] = useState('');
   const [collaborators, setCollaborators] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const {dispatch} = useAppState()
-  const addCollaborator = (user: User) => {
+  const [collaboratorsEmail,setCollaboratorsEmail] = useState<any>()
+  const {dispatch,workspaceId} = useAppState()
+  const addCollaborator = async(user: User) => {
     setCollaborators([...collaborators, user]);
+    setCollaboratorsEmail([...collaboratorsEmail,user.email])
   };
 
   const removeCollaborator = (user: User) => {
     setCollaborators(collaborators.filter((c) => c.id !== user.id));
+    setCollaboratorsEmail(collaboratorsEmail((e:string)=>e !== user.email))
   };
 
   const createItem = async () => {
@@ -56,6 +60,7 @@ const CreateWorkspace = () => {
         bannerUrl: '',
         folders:[]
       };
+      await addMultipleCollaborators(newWorkspace.id,collaboratorsEmail)
       if (permissions === 'private') {
         toast({ title: 'Success', description: 'Created the workspace' });
       dispatch({
@@ -63,6 +68,7 @@ const CreateWorkspace = () => {
         payload: newWorkspace
       })
         await createWorkspace(newWorkspace);
+        await createWorkSpaceInFirebase(newWorkspace.id)
         router.refresh()
         router.push(`/dashboard/${newWorkspace.id}`);
       }
@@ -74,6 +80,7 @@ const CreateWorkspace = () => {
         })
         await createWorkspace(newWorkspace);
         await addCollaborators(collaborators, uuid);
+        await createWorkSpaceInFirebase(newWorkspace.id)
         router.refresh()
         router.push(`/dashboard/${newWorkspace.id}`);
       }

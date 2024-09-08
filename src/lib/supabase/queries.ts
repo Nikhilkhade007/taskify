@@ -245,12 +245,7 @@ export const removeCollaborators = async (
   });
 };
 
-export const findUser = async (userId: string) => {
-  const response = await db.query.users.findFirst({
-    where: (u, { eq }) => eq(u.id, userId),
-  });
-  return response;
-};
+
 
 export const getActiveProductsWithPrice = async () => {
   try {
@@ -351,6 +346,28 @@ export const getCollaborators = async (workspaceId: string) => {
   const resolvedUsers = await Promise.all(userInformation);
   return resolvedUsers.filter(Boolean) as User[];
 };
+export const getCollboratosEmails = async (workspaceId: string): Promise<string[]> => {
+  const response = await db
+    .select()
+    .from(collaborators)
+    .where(eq(collaborators.workspaceId, workspaceId));
+
+  if (!response.length) return [];
+
+  const userInformationPromises: Promise<User | undefined>[] = response.map(async (collaborator) => {
+    const user = await db.query.users.findFirst({
+      where: (u, { eq }) => eq(u.id, collaborator.userId),
+    });
+    return user;
+  });
+
+  const resolvedUsers = await Promise.all(userInformationPromises);
+
+  return resolvedUsers
+    .filter((user): user is User => Boolean(user) && Boolean(user?.email)) 
+    .map((user) => user.email as string);
+};
+
 
 export const getUsersFromSearch = async (email: string) => {
   if (!email) return [];
@@ -360,7 +377,16 @@ export const getUsersFromSearch = async (email: string) => {
     .where(ilike(users.email, `${email}%`));
   return accounts;
 };
+export const getUserById = async (userId: string) => {
+  if (!userId) return null; 
 
+  const user = await db
+    .select()
+    .from(users)
+    .where(eq(users.id,userId)) 
+
+  return user[0].email; 
+};
 
 export const updateUser = async (userId: string, avatarUrl: string) => {
   if (!userId || !avatarUrl) return;
@@ -385,3 +411,30 @@ export const updateUser = async (userId: string, avatarUrl: string) => {
     return { data: null, error: 'Error updating user' };
   }
 };
+
+export const getIdsByWorkspace = async (workspaceId: string) => {
+  const folderIds = await db.select({
+    id: folders.id,
+  }).from(folders).where(eq(folders.workspaceId, workspaceId));
+
+  const fileIds = await db.select({
+    id: files.id,
+  }).from(files).where(eq(files.workspaceId, workspaceId));
+
+  const combinedIds = [
+    workspaceId,
+    ...folderIds.map(f => (f.id)),
+    ...fileIds.map(f => (f.id)),
+  ];
+
+  return combinedIds;
+};
+
+export const getIdsByFolderId =  async(folderId:string)=>{
+  const fileIds = await db.select().from(files).where(eq(files.folderId,folderId))
+  const combinedIds = [
+    folderId,
+    ...fileIds.map((f)=> (f.id))
+  ]
+  return combinedIds
+}

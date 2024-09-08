@@ -31,7 +31,9 @@ async function Sidebar({params,className}:SidebarProps) {
         params.workspaceId
       );
   return (
-    <aside className={twMerge('hidden p-4 sm:flex sm:flex-col sm:items-center relative shrink-0 sm:gap-4 w-[280px] !justify-between',className)}>
+    
+      <aside className={twMerge('hidden p-4 sm:flex sm:flex-col sm:items-center relative shrink-0 sm:gap-4 w-[280px] !justify-between',className)}>
+        <ScrollArea>
         <div>
             <DropdownWorkspace sharedWorkspaces={sharedWorkspaces} collaboratingWorkspaces={collaboratingWorkspaces} privateWorkspaces={privateWorkspaces} defaultValue={[...privateWorkspaces,
                 ...collaboratingWorkspaces,
@@ -49,8 +51,12 @@ async function Sidebar({params,className}:SidebarProps) {
           />
         
         </div>
+        </ScrollArea>
+        <div className='absolute left-0 bottom-0 right-0'>
         <UserCard subscription={subscriptionData} />
+        </div>
     </aside>
+    
   )
 }
 

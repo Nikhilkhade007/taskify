@@ -6,13 +6,14 @@ import React, { useMemo, useState } from 'react'
 import { AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 import clsx from 'clsx';
 import EmojiPicker from '../global/emoji-picker';
-import { createFile, updateFile, updateFolder } from '@/lib/supabase/queries';
+import { createFile, getCollboratosEmails, getUserById, updateFile, updateFolder } from '@/lib/supabase/queries';
 import { toast } from '../ui/use-toast';
 import TooltipComponent from '../global/tooltip-component';
 import { Plus, PlusIcon, TrashIcon } from 'lucide-react';
 import { useSupabaseUser } from '@/lib/providers/supabase-user-provider';
 import { File } from '@/lib/supabase/supabase.types';
 import { v4 } from 'uuid';
+import { addMultipleCollaborators, createWorkSpaceInFirebase } from '@/lib/server-action/action';
 interface DropdownProps{
   title:string;
   id:string;
@@ -91,6 +92,11 @@ const Dropdown = ({title,id,iconId,children,disabled,listType}:DropdownProps) =>
       type: 'ADD_FILE',
       payload: { file: newFile, folderId: id, workspaceId },
     });
+    const col = await getCollboratosEmails(workspaceId)
+    const ws = state.workspaces.find((workspace)=>workspace.id === workspaceId)?.workspaceOwner
+    const owner = await getUserById(ws || "")
+    await addMultipleCollaborators(newFile.id,[...col,owner!])
+    await createWorkSpaceInFirebase(newFile.id)
     const { data, error } = await createFile(newFile);
     if (error) {
       toast({
@@ -248,7 +254,6 @@ const Dropdown = ({title,id,iconId,children,disabled,listType}:DropdownProps) =>
   return (
     <AccordionItem value={id} onClick={e=>{
       e.stopPropagation()
-      navigateToPage(id,listType)
     }} className={listStyles}>
       <AccordionTrigger id={listType} className='p-2 w-full hover:no-underline dark:text-muted-foreground text-sm' disabled={listType === "file"}>
         <div className={groupStyle}>
@@ -260,7 +265,7 @@ const Dropdown = ({title,id,iconId,children,disabled,listType}:DropdownProps) =>
               'bg-muted cursor-text':isEditing,
               "bg-transparent cursor-pointer":!isEditing
             })} readOnly={!isEditing} onDoubleClick={handleDoubleClicke}
-            onBlur={handleBlur} onChange={listType === "folder" ? folderTitleChange :fileTitleChange}/>
+            onBlur={handleBlur} onClick={()=>navigateToPage(id,listType)} onChange={listType === "folder" ? folderTitleChange :fileTitleChange}/>
           </div>
           <div className={hoverStyles}>
             <TooltipComponent message={listType === "folder"?"Remove folder":"Remove file"}>

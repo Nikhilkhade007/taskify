@@ -16,6 +16,7 @@ import { toast } from '../ui/use-toast';
 import { createWorkspace } from '@/lib/supabase/queries';
 import { useAppState } from '@/lib/providers/state-provider';
 import { useRouter } from 'next/navigation';
+import { createWorkSpaceInFirebase } from '@/lib/server-action/action';
 interface DashboardSetupProps {
     user: AuthUser;
     subscription: Subscription | null;
@@ -65,6 +66,7 @@ function DashboardSetup({user,subscription}:DashboardSetupProps) {
     }
   }
   try {
+   
     const newWorkspace: workspace = {
       data: null,
       createdAt: new Date().toISOString(),
@@ -89,8 +91,8 @@ function DashboardSetup({user,subscription}:DashboardSetupProps) {
       title: 'Workspace Created',
       description: `${newWorkspace.title} has been created successfully.`,
     });
-
     router.replace(`/dashboard/${newWorkspace.id}`);
+    await createWorkSpaceInFirebase(newWorkspace.id)
   } catch (error) {
     console.log(error, 'Error');
     toast({
@@ -174,7 +176,9 @@ function DashboardSetup({user,subscription}:DashboardSetupProps) {
               )} */}
           </div>
           <div className='flex justify-end'>
-          <Button type="submit">Create workspace</Button>
+          <Button type="submit" disabled={isLoading}>
+            {isLoading?"Creating....":"Create workspace"}
+          </Button>
           </div>
         </form>
       </CardContent>

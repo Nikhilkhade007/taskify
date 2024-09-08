@@ -2,19 +2,20 @@
 
 'use client'
 import { useAppState } from '@/lib/providers/state-provider'
-import { Folder } from '@/lib/supabase/supabase.types';
+import { Folder, User } from '@/lib/supabase/supabase.types';
 import React, { useEffect, useState } from 'react'
 import TooltipComponent from '../global/tooltip-component';
 import { Plus } from 'lucide-react';
 import { useSupabaseUser } from '@/lib/providers/supabase-user-provider';
 import { v4 } from 'uuid';
-import { createFolder } from '@/lib/supabase/queries';
+import { createFolder,getCollboratosEmails, getUserById } from '@/lib/supabase/queries';
 import { toast } from '../ui/use-toast';
 import { Accordion } from '../ui/accordion';
 import Dropdown from './Dropdown';
 import useSupabaseRealtime from '@/lib/hooks/UseSupabaseRealtime';
 import { ScrollArea } from '../ui/scroll-area';
 import { useSubscriptionModal } from '@/lib/providers/subscription-model-provider';
+import { addMultipleCollaborators, createWorkSpaceInFirebase } from '@/lib/server-action/action';
 interface FolderDropdownListProps{
   workspaceFolders:Folder[];
   workspaceId:string;
@@ -47,6 +48,7 @@ function FolderDropdownList({workspaceFolders,workspaceId}:FolderDropdownListPro
         workspaceId,folder:{...newFolder,files:[]}
       }
     })
+    
     const {data,error} = await createFolder(newFolder)
     if (error){
       toast({
@@ -59,6 +61,11 @@ function FolderDropdownList({workspaceFolders,workspaceId}:FolderDropdownListPro
         title:"success",
         description:"Folder created successfully",
       })
+      const col = await getCollboratosEmails(workspaceId)
+    const ws = state.workspaces.find((workspace)=>workspace.id === workspaceId)?.workspaceOwner
+    const owner = await getUserById(ws || "")
+    await addMultipleCollaborators(newFolder.id,[...col,owner!])
+    await createWorkSpaceInFirebase(newFolder.id)
     }
   }
 
